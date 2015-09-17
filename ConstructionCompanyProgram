@@ -53,5 +53,4 @@ sub setTotalCost {
      $carPrice = $numberCars * CAR_PRICE;
      $totalCost = $bathPrice + $bedPrice + $carPrice + BASE_PRICE;
      print "\nYour new home will be on lot number $lotNumber. \nThe total cost of your new home will be \$$totalCost. Thank you, and come again! \n\n";
-         
 }
