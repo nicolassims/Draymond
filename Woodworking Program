@@ -1,0 +1,51 @@
+## Assignment: Project 2
+## Author: Nicolas Sims (sableye.nico@gmail.com)
+## Version: 09.29.2014.01
+## Purpose: Create an application to compute the price of a sign a customer orders, based on multiple factors.
+
+use 5.14.1;
+use warnings;
+
+my ($orderNumber, $numberCharacters, $totalBill, $colorCharacters, $woodType);
+my ($customerName);
+
+sub main {
+     setOrderNumber();
+     setCustomerName();
+     setWoodType();
+     setNumberCharacters();
+         
+}
+
+main();
+
+sub setOrderNumber {
+     if (!(defined $orderNumber)) {
+          print "\nEnter order number. ";
+          chomp ($orderNumber = <STDIN>);
+     }
+     setCustomerName();
+}
+
+sub setCustomerName {
+     if (!(defined $customerName)) {
+          print "\nEnter the customer's name. ";
+          chomp ($customerName = <STDIN>);
+     }
+     setWoodType();
+}
+
+sub setWoodType {
+     if (!(defined $woodType)) {
+          print "\nEnter the type of wood the customer wants his sign to be made of. \n(Oak = 1, Pine = 2) ";
+          chomp ($woodType = <STDIN>);
+     }
+     setNumberCharacters();
+}
+
+sub setNumberCharacters {
+     if (!(defined $numberCharacters)) {
+          print "\nEnter the number of characters the customer wants on his sign. ";
+          chomp ($numberCharacters = <STDIN>);
+     }
+}
