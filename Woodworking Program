@@ -6,7 +6,7 @@
 use 5.14.1;
 use warnings;
 
-my ($orderNumber, $numberCharacters, $totalBill, $colorCharacters, $woodType);
+my ($orderNumber, $numberCharacters, $totalBill, $colorCharacters, $woodType, $errorCounter);
 my ($customerName);
 
 sub main {
@@ -14,7 +14,8 @@ sub main {
      setCustomerName();
      setWoodType();
      setNumberCharacters();
-         
+     setColorCharacters();
+     setTotalBill();
 }
 
 main();
@@ -24,7 +25,6 @@ sub setOrderNumber {
           print "\nEnter order number. ";
           chomp ($orderNumber = <STDIN>);
      }
-     setCustomerName();
 }
 
 sub setCustomerName {
@@ -32,20 +32,76 @@ sub setCustomerName {
           print "\nEnter the customer's name. ";
           chomp ($customerName = <STDIN>);
      }
-     setWoodType();
 }
 
 sub setWoodType {
-     if (!(defined $woodType)) {
+     if ((!defined $woodType) || $woodType != 1 && $woodType != 2) {
           print "\nEnter the type of wood the customer wants his sign to be made of. \n(Oak = 1, Pine = 2) ";
           chomp ($woodType = <STDIN>);
+          if ($woodType != 1 && $woodType != 2) {
+               errorHandler();
+          }
      }
-     setNumberCharacters();
 }
 
 sub setNumberCharacters {
-     if (!(defined $numberCharacters)) {
+     if ((!defined $numberCharacters) || $numberCharacters == 0) {
           print "\nEnter the number of characters the customer wants on his sign. ";
           chomp ($numberCharacters = <STDIN>);
+          if ($numberCharacters == 0) {
+               errorHandler();
+          }
      }
 }
+
+sub setColorCharacters {
+     if ((!defined $colorCharacters) || $colorCharacters != 1 && $colorCharacters != 2 && $colorCharacters != 3) {
+          print "\nEnter the color of the characters the customer wants on his sign.\n(Black = 1, White = 2, Goldleaf = 3) ";
+          chomp ($colorCharacters = <STDIN>);
+          if ($colorCharacters != 1 && $colorCharacters != 2 && $colorCharacters != 3) {
+               errorHandler();
+          }
+     }
+}
+
+sub setTotalBill {
+     use constant MINIMUM_CHARGE => 30;
+     use constant OAK_CHARGE => 15;
+     use constant CHARACTER_CHARGE => 3;
+     use constant GOLDLEAF_CHARGE => 12;
+     if ($woodType == 1) {
+          $totalBill = MINIMUM_CHARGE + OAK_CHARGE;
+          if ($numberCharacters > 6) {
+               $totalBill = $totalBill + ($numberCharacters - 6) * CHARACTER_CHARGE;
+          }
+          if ($colorCharacters == 3) {
+               $totalBill = $totalBill + 12;
+          }
+     } else {
+          $totalBill = MINIMUM_CHARGE;
+          if ($numberCharacters > 6) {
+               $totalBill = $totalBill + ($numberCharacters - 6) * CHARACTER_CHARGE;
+          }
+          if ($colorCharacters == 3) {
+               $totalBill = $totalBill + 12;
+          }
+     }
+     system("cls");
+     print "\nThe total bill for $customerName will be \$$totalBill. Their order number is $orderNumber. \n";
+}
+
+sub errorHandler {
+     print "\nYou've entered something wrong. Try again. ";
+     if (!(defined $errorCounter)) {
+          $errorCounter = 0
+     }
+     $errorCounter = $errorCounter + 1;
+     if ($errorCounter == 5) {
+          system("cls");
+          print "\nYou're drunk. Stop using the computer. \n\n\n\n";
+          sleep 2;
+          system("cls");
+          die;
+     }
+     main ();
+}     
