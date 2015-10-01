@@ -35,7 +35,7 @@ sub setCustomerName {
 }
 
 sub setWoodType {
-     if ((!defined $woodType) || $woodType != 1 && $woodType != 2) {
+     if (!(defined $woodType) || $woodType != 1 && $woodType != 2) {
           print "\nEnter the type of wood the customer wants his sign to be made of. \n(Oak = 1, Pine = 2) ";
           chomp ($woodType = <STDIN>);
           if ($woodType != 1 && $woodType != 2) {
@@ -45,7 +45,7 @@ sub setWoodType {
 }
 
 sub setNumberCharacters {
-     if ((!defined $numberCharacters) || $numberCharacters == 0) {
+     if (!(defined $numberCharacters) || $numberCharacters == 0) {
           print "\nEnter the number of characters the customer wants on his sign. ";
           chomp ($numberCharacters = <STDIN>);
           if ($numberCharacters == 0) {
@@ -55,7 +55,7 @@ sub setNumberCharacters {
 }
 
 sub setColorCharacters {
-     if ((!defined $colorCharacters) || $colorCharacters != 1 && $colorCharacters != 2 && $colorCharacters != 3) {
+     if (!(defined $colorCharacters) || $colorCharacters != 1 && $colorCharacters != 2 && $colorCharacters != 3) {
           print "\nEnter the color of the characters the customer wants on his sign.\n(Black = 1, White = 2, Goldleaf = 3) ";
           chomp ($colorCharacters = <STDIN>);
           if ($colorCharacters != 1 && $colorCharacters != 2 && $colorCharacters != 3) {
@@ -104,4 +104,4 @@ sub errorHandler {
           die;
      }
      main ();
-}     
+}
