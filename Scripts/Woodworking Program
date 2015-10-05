@@ -46,7 +46,7 @@ sub setWoodType {
 
 sub setNumberCharacters {
      if (!(defined $numberCharacters) || $numberCharacters == 0) {
-          print "\nEnter the number of characters the customer wants on his sign. ";
+          print "\nEnter the number of characters the customer wants on his sign, FOOL. ";
           chomp ($numberCharacters = <STDIN>);
           if ($numberCharacters == 0) {
                errorHandler();
