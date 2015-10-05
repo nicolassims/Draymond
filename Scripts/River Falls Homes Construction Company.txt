@@ -1,0 +1,56 @@
+## Assignment: Project 01.
+## Nicolas Sims (sableye.nico@gmail.com)
+## 09.14.2015.01
+## Purpose: Design the logic for a program for the River Falls Homes Construction Company.
+
+use 5.14.1;
+use warnings;
+
+my ($lotNumber, $numberBedrooms, $numberBathrooms, $numberCars, $totalCost);
+use constant BASE_PRICE => 50000;
+use constant BED_PRICE => 17000;
+use constant BATH_PRICE => 12500;
+use constant CAR_PRICE => 6000;
+
+sub main {
+     setLotNumber();
+     setNumberBedrooms();
+     setNumberBathrooms();
+     setNumberCars();
+     setTotalCost();
+}
+
+main();
+
+sub setLotNumber {
+     print "\nWelcome to the River Falls Homes Construction Company Lot Design Terminal. \nTo start off, would you please enter which lot number you are interested in? \n\n";
+     chomp ($lotNumber = <STDIN>);
+     print "\nThank you. \n";
+}
+
+sub setNumberBedrooms {
+     print "\nNext, would you please enter how many bedrooms you require in your house? \n\n";
+     chomp ($numberBedrooms = <STDIN>);
+     print "\nThank you. \n";
+}
+
+sub setNumberBathrooms {
+     print "\nNext, would you please enter how many bathrooms you require in your house? \n\n";
+     chomp ($numberBathrooms = <STDIN>);
+     print "\nThank you. \n";
+}
+
+sub setNumberCars {
+     print "\nNext, would you please enter how many cars you require to fit in your garage? \n\n";
+     chomp ($numberCars = <STDIN>);
+     print "\nThank you. \n";
+}
+
+sub setTotalCost {
+     my ($bedPrice, $bathPrice, $carPrice);
+     $bedPrice = $numberBedrooms * BED_PRICE;
+     $bathPrice = $numberBathrooms * BATH_PRICE;
+     $carPrice = $numberCars * CAR_PRICE;
+     $totalCost = $bathPrice + $bedPrice + $carPrice + BASE_PRICE;
+     print "\nYour new home will be on lot number $lotNumber. \nThe total cost of your new home will be \$$totalCost. Thank you, and come again! \n\n";       
+}

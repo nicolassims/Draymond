@@ -1,0 +1,59 @@
+## Assignment: Project PARTYTIME
+## Author: Nicolas Sims (sableye.nico@gmail.com)
+## Version: 420.Blazeit
+## Purpose: Mess about
+
+use 5.14.1;
+use warnings;
+
+my ($damageAmount);
+my ($playerName, $insultResponse);
+
+sub main();
+     creepOut();
+     tutorialBattle();
+
+sub creepOut {
+     print "{SEVEN DAYS...} \n";
+     sleep 2;
+     print "{SEVEN DAYS... 'till the end...} \n";
+     sleep 2;
+     print "{SEVEN DAYS... 'till the end... of everything...} \n";
+     sleep 2;
+     print "{Nah, just messin' with ya, mate. It's cool. Better wake up, though.} \n";
+     sleep 2;
+     print "{You wake up. What is your name?} \n>";
+     chomp ($playerName = <STDIN>);
+     sleep 1;
+     print "{...} \n";
+     print "{Really? \"$playerName\" is a pretty lame name. Offense intended.} \n";
+     sleep 2;
+     print "{Do you want to respond to this cutting insult?} \n>";
+     chomp ($playerName = <STDIN>);
+     sleep 1;
+     print "{Too bad. The programmer doesn't know how to check for string variables yet, \nand it would be weird to do the whole \"(Yes = 1, No = 2)\" thing. \nIt would ruin your immersion.} \n";
+     sleep 2;
+     print "{Enough exposition. Goblin fight, go!} \n";
+     sleep 2;
+}
+
+sub tutorialBattle {
+     print "\"Rar. I'm a goblin or whatever.\" \n";
+     sleep 2;
+     print "{The goblin stands before you, brandishing his club. \nHis eyes are of bloodstone, and his skin is of the darkest obsidian. \nHow much damage do you wanna do? \nWhat, you thought this thing would have an actual combat system? LOL.} \n";
+     chomp ($damageAmount = <STDIN>);
+     if ($damageAmount == 42) {
+          print "{Yep, you win. Meaning of life, the universe, and goblin health. Congrats.} \n";
+          sleep 2;
+          die;
+     } elsif ($damageAmount > 42) {
+          print "{Geez, overkill much? The poor beggar only had 42 health. Compensating for something?} \n";
+          sleep 2;
+          die;
+     } else {
+          print "{Nope, too low. He hits you back and... \n";
+          sleep 2;
+          die;
+     }
+     
+}
