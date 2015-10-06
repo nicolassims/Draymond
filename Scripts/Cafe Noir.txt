@@ -1,0 +1,5 @@
+## Assignment: Project 03
+## Author: Nicolas Sims (sableye.nico@gmail.com)
+## Version: 10.06.2015.01
+## Purpose: Create an application that will allow the Cafe Noir to perform Market research on its customers.
+
