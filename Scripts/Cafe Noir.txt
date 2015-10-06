@@ -1,5 +1,25 @@
 ## Assignment: Project 03
 ## Author: Nicolas Sims (sableye.nico@gmail.com)
 ## Version: 10.06.2015.01
-## Purpose: Create an application that will allow the Cafe Noir to perform Market research on its customers.
+## Purpose: Create an application that will allow the Café Noir to perform Market research on its customers.
 
+use 5.14.1;
+use warnings;
+
+my ($zipCode, $customerAge, $numberItems, $continueInt, $averageAge, $underThirtyItemNumbers, $overThirtyItemNumbers);
+use constant HOME_ZIPCODE => 54984;
+
+sub main {
+     setZipCode();
+}
+
+main();
+
+sub setZipCode {
+     use constant HIGHEST_ZIPCODE => 99950;
+     use constant LOWEST_ZIPCODE => 00501;
+     while (!(defined $zipCode) || $zipCode < 00501 && $zipCode > 99950) { 
+          print "Please enter the customer's Zip Code. \n";
+          chomp ($zipCode = <STDIN>);
+     }
+}
