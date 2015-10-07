@@ -65,25 +65,26 @@ sub setColorCharacters {
 }
 
 sub setTotalBill {
+     use constant MAXIMUM_NUMBERS => 6;
      use constant MINIMUM_CHARGE => 30;
      use constant OAK_CHARGE => 15;
      use constant CHARACTER_CHARGE => 3;
      use constant GOLDLEAF_CHARGE => 12;
      if ($woodType == 1) {
           $totalBill = MINIMUM_CHARGE + OAK_CHARGE;
-          if ($numberCharacters > 6) {
-               $totalBill = $totalBill + ($numberCharacters - 6) * CHARACTER_CHARGE;
+          if ($numberCharacters > MAXIMUM_NUMBERS) {
+               $totalBill = $totalBill + ($numberCharacters - MAXIMUM_NUMBERS) * CHARACTER_CHARGE;
           }
           if ($colorCharacters == 3) {
-               $totalBill = $totalBill + 12;
+               $totalBill = $totalBill + GOLDLEAF_CHARGE;
           }
      } else {
           $totalBill = MINIMUM_CHARGE;
-          if ($numberCharacters > 6) {
-               $totalBill = $totalBill + ($numberCharacters - 6) * CHARACTER_CHARGE;
+          if ($numberCharacters > MAXIMUM_NUMBERS) {
+               $totalBill = $totalBill + ($numberCharacters - MAXIMUM_NUMBERS) * CHARACTER_CHARGE;
           }
           if ($colorCharacters == 3) {
-               $totalBill = $totalBill + 12;
+               $totalBill = $totalBill + GOLDLEAF_CHARGE;
           }
      }
      system("cls");
