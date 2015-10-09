@@ -7,7 +7,7 @@
 use 5.14.1;
 use warnings;
 
-my ($zipCode, $customerAge, $numberItems, $continueInt, $averageAge, $numberAges, $underThirtyItemNumbers, $overThirtyItemNumbers);
+my ($customerAge, $numberItems, $continueInt, $averageAge, $numberAges, $underThirtyItemNumbers, $overThirtyItemNumbers);
 
 sub main {
      $continueInt = 1;
@@ -16,8 +16,6 @@ sub main {
           setCustomerAge();
           setAverageAge();
           setNumberItems();
-          print "Would you like to continue? (0 for No, 1 for Yes.) \n";
-          chomp ($continueInt = <STDIN>);
      }
      die;
 }
@@ -25,6 +23,7 @@ sub main {
 main();
 
 sub setZipCode {
+     my ($zipCode);
      use constant HOME_ZIPCODE => 54984;
      use constant HIGHEST_ZIPCODE => 99950;
      use constant LOWEST_ZIPCODE => 501;
@@ -38,6 +37,7 @@ sub setZipCode {
 }
 
 sub setCustomerAge {
+     $customerAge = 0;
      use constant HIGHEST_AGE => 110;
      use constant LOWEST_AGE => 10;
      while (!defined $customerAge || $customerAge < LOWEST_AGE || $customerAge > HIGHEST_AGE) { 
@@ -47,16 +47,17 @@ sub setCustomerAge {
 }
 
 sub setAverageAge {
-     use constant BASE_NUMBER_AGES => 2;
+     use constant BASE_NUMBER_AGES => 1;
      while (!defined $numberAges) {
           $numberAges = BASE_NUMBER_AGES;
+     }
+     if (defined $averageAge) {
+          $numberAges++;
+          $averageAge = ($customerAge + $averageAge)/$numberAges;
      }
      while (!defined $averageAge) {
           $averageAge = $customerAge;
      }
-     $averageAge = ($customerAge + $averageAge)/$numberAges;
-     $numberAges = $numberAges++;
-     print "TEST Average Customer age is $averageAge. TEST\n"
 }
 
 sub setNumberItems {
@@ -64,30 +65,42 @@ sub setNumberItems {
      $confirmCounter = 0;
      use constant MAXIMUM_ITEMS => 12;
      use constant MINIMUM_ITEMS => 1;
-     use constant TIMES_CONFIRMED => 2;
-     while ($confirmCounter < TIMES_CONFIRMED) {
+     use constant MAX_TIMES_CONFIRMED => 2;
+     while ($confirmCounter < MAX_TIMES_CONFIRMED) {
           print "Please enter the number of items the customer is buying. \n";
           chomp ($numberItems = <STDIN>);
-          for ($confirmCounter = 0; $numberItems > MAXIMUM_ITEMS && $confirmCounter < TIMES_CONFIRMED || $numberItems < MINIMUM_ITEMS && $confirmCounter < TIMES_CONFIRMED; $confirmCounter++) {
+          for ($confirmCounter = 0; $numberItems > MAXIMUM_ITEMS && $confirmCounter < MAX_TIMES_CONFIRMED || $numberItems < MINIMUM_ITEMS && $confirmCounter < MAX_TIMES_CONFIRMED; $confirmCounter++) {
                print "Are you sure? Please re-enter the number of items the customer is buying. \n";
                chomp ($numberItems = <STDIN>);   
           }
-          if ($confirmCounter == TIMES_CONFIRMED && $numberItems > MAXIMUM_ITEMS || $confirmCounter < TIMES_CONFIRMED && $numberItems <= MAXIMUM_ITEMS && $numberItems >= MINIMUM_ITEMS) {
+          if ($confirmCounter == MAX_TIMES_CONFIRMED && $numberItems > MAXIMUM_ITEMS || $confirmCounter <= MAX_TIMES_CONFIRMED && $numberItems <= MAXIMUM_ITEMS || $confirmCounter <= MAX_TIMES_CONFIRMED && $numberItems >= MINIMUM_ITEMS) {
                setAgeItemNumbers();
           } else {
                print "I'm sorry, it is impossible to purchase $numberItems items. \n";
+               sleep 3;
+               system ("cls")
           }
+          $confirmCounter = MAX_TIMES_CONFIRMED;
      }
 }
 
 sub  setAgeItemNumbers {
      use constant DEMOGRAPHIC_CHECKER => 30;
-     $underThirtyItemNumbers = 0;
-     $overThirtyItemNumbers = 0;
+     if (!defined $underThirtyItemNumbers && !defined $overThirtyItemNumbers) {
+          $underThirtyItemNumbers = 0;
+          $overThirtyItemNumbers = 0;
+     }
      if ($customerAge < DEMOGRAPHIC_CHECKER) {
           $underThirtyItemNumbers = $underThirtyItemNumbers + $numberItems;
      } else {
           $overThirtyItemNumbers = $overThirtyItemNumbers + $numberItems;
      }
-     print "TEST The number of items ordered by people over 30 is $overThirtyItemNumbers. \nThe number of items ordered by people under 30 is $underThirtyItemNumbers. TEST\n"
+     printResults();
+}
+
+sub printResults {
+     system ("cls");
+     print "Average Customer age is $averageAge. \nThe number of items ordered by people over 30 is $overThirtyItemNumbers. \nThe number of items ordered by people under 30 is $underThirtyItemNumbers. \nWould you like to continue? (0 for No, 1 for Yes.) \n";
+     chomp ($continueInt = <STDIN>);
+     system ("cls");
 }
