@@ -2,18 +2,18 @@
 ## Author: Nicolas Sims (sableye.nico@gmail.com)
 ## Version: 10.06.2015.01
 ## Purpose: Create an application that will allow the Café Noir to perform Market research on its customers.
-#REMEMBER TO DELETE TESTS!
 
 use 5.14.1;
 use warnings;
 
-my ($customerAge, $numberItems, $continueInt, $averageAge, $numberAges, $underThirtyItemNumbers, $overThirtyItemNumbers);
+my ($customerAge, $numberItems, $continueInt, $averageAge,$totalAge, $numberAges, $underThirtyItemNumbers, $overThirtyItemNumbers);
 
 sub main {
      $continueInt = 1;
      while ($continueInt != 0) {
           setZipCode();
           setCustomerAge();
+          setTotalAge();
           setAverageAge();
           setNumberItems();
      }
@@ -46,17 +46,25 @@ sub setCustomerAge {
      }
 }
 
+sub  setTotalAge {
+     if (!defined $totalAge) {
+           $totalAge = $customerAge;
+     } else {
+          $totalAge = $totalAge + $customerAge;
+     }
+}
+
 sub setAverageAge {
-     use constant BASE_NUMBER_AGES => 1;
+     use constant BASE_NUMBER_AGES => 0;
      while (!defined $numberAges) {
           $numberAges = BASE_NUMBER_AGES;
      }
+     while (!defined $averageAge) {
+          $averageAge = 0
+     }
      if (defined $averageAge) {
           $numberAges++;
-          $averageAge = ($customerAge + $averageAge)/$numberAges;
-     }
-     while (!defined $averageAge) {
-          $averageAge = $customerAge;
+          $averageAge = $totalAge/$numberAges;
      }
 }
 
