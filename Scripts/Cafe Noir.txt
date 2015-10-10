@@ -6,7 +6,7 @@
 use 5.14.1;
 use warnings;
 
-my ($customerAge, $numberItems, $continueInt, $averageAge,$totalAge, $numberAges, $underThirtyItemNumbers, $overThirtyItemNumbers);
+my ($customerAge, $numberItems, $continueInt, $averageAge, $totalAge, $numberAges, $underThirtyItemNumbers, $overThirtyItemNumbers);
 
 sub main {
      $continueInt = 1;
