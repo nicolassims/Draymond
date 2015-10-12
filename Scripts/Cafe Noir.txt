@@ -40,7 +40,7 @@ sub setCustomerAge {
      $customerAge = 0;
      use constant HIGHEST_AGE => 110;
      use constant LOWEST_AGE => 10;
-     while (!defined $customerAge || $customerAge < LOWEST_AGE || $customerAge > HIGHEST_AGE) { 
+     while ($customerAge < LOWEST_AGE || $customerAge > HIGHEST_AGE) { 
           print "Please enter the customer's age. \n";
           chomp ($customerAge = <STDIN>);
      }
@@ -108,7 +108,7 @@ sub  setAgeItemNumbers {
 
 sub printResults {
      system ("cls");
-     print "Average Customer age is $averageAge. \nThe number of items ordered by people over 30 is $overThirtyItemNumbers. \nThe number of items ordered by people under 30 is $underThirtyItemNumbers. \nWould you like to continue? (0 for No, 1 for Yes.) \n";
+     print "Average Customer age is $averageAge. \nThe number of items ordered by people at or over 30 is $overThirtyItemNumbers. \nThe number of items ordered by people under 30 is $underThirtyItemNumbers. \nWould you like to continue? (0 for No, 1 for Yes.) \n";
      chomp ($continueInt = <STDIN>);
      system ("cls");
 }
