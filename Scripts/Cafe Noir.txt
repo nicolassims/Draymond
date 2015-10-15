@@ -30,8 +30,8 @@ sub setZipCode {
      use constant HOME_ZIPCODE => 54984;
      use constant HIGHEST_ZIPCODE => 99950;
      use constant LOWEST_ZIPCODE => 501;
-     if ($zipCode < LOWEST_ZIPCODE || $zipCode > HIGHEST_ZIPCODE) { 
-          print "Please enter the customer's Zip Code. \n";
+     while ($zipCode < LOWEST_ZIPCODE || $zipCode > HIGHEST_ZIPCODE) { 
+          print "Please enter the customer's zip code. \n";
           chomp ($zipCode = <STDIN>);
           if ($zipCode == HOME_ZIPCODE) {
                print "This one's a native. Treat them well. \n"
