@@ -10,6 +10,7 @@ my ($customerAge, $numberItems, $continueInt, $averageAge, $totalAge, $numberAge
 
 sub main {
      $continueInt = 1;
+     $validOrder = 0;
      while ($continueInt != 0) {
           setZipCode();
           setCustomerAge();
@@ -30,9 +31,13 @@ sub setZipCode {
      use constant HOME_ZIPCODE => 54984;
      use constant HIGHEST_ZIPCODE => 99950;
      use constant LOWEST_ZIPCODE => 501;
-     while ($zipCode < LOWEST_ZIPCODE || $zipCode > HIGHEST_ZIPCODE) { 
+     if ($zipCode < LOWEST_ZIPCODE || $zipCode > HIGHEST_ZIPCODE) { 
           print "Please enter the customer's zip code. \n";
           chomp ($zipCode = <STDIN>);
+          while ($zipCode < LOWEST_ZIPCODE || $zipCode > HIGHEST_ZIPCODE) {
+               print "That is not correct. Please enter the customer's zip code correctly. \n";
+               chomp ($zipCode = <STDIN>);
+          }
           if ($zipCode == HOME_ZIPCODE) {
                print "This one's a native. Treat them well. \n"
           }
@@ -43,9 +48,13 @@ sub setCustomerAge {
      $customerAge = 0;
      use constant HIGHEST_AGE => 110;
      use constant LOWEST_AGE => 10;
-     while ($customerAge < LOWEST_AGE || $customerAge > HIGHEST_AGE) { 
+     if ($customerAge < LOWEST_AGE || $customerAge > HIGHEST_AGE) { 
           print "Please enter the customer's age. \n";
           chomp ($customerAge = <STDIN>);
+          while ($customerAge < LOWEST_AGE || $customerAge > HIGHEST_AGE) { 
+               print "Company policy forbids us from serving under-10s and over-110s. \nAre you sure their age is correct? Please re-enter their age. \n";
+               chomp ($customerAge = <STDIN>);
+          }
      }
 }
 
@@ -71,7 +80,6 @@ sub setNumberItems {
      use constant MAXIMUM_ITEMS => 12;
      use constant MINIMUM_ITEMS => 1;
      use constant MAX_TIMES_CONFIRMED => 2;
-     use constant YES_VALID => 1;
      while ($confirmCounter < MAX_TIMES_CONFIRMED) {
           print "Please enter the number of items the customer is buying. \n";
           chomp ($numberItems = <STDIN>);
@@ -80,15 +88,18 @@ sub setNumberItems {
                chomp ($numberItems = <STDIN>);   
           }
           if ($confirmCounter == MAX_TIMES_CONFIRMED && $numberItems > MAXIMUM_ITEMS || $confirmCounter <= MAX_TIMES_CONFIRMED && $numberItems <= MAXIMUM_ITEMS && $numberItems >= MINIMUM_ITEMS || $confirmCounter <= MAX_TIMES_CONFIRMED && $numberItems >= MINIMUM_ITEMS) {
-               $validOrder = YES_VALID;
+               setValidOrder();
           } else {
                print "I'm sorry, it is impossible to purchase $numberItems items. \n";
                sleep 3;
                system ("cls");
-               $validOrder = 0;
           }
           $confirmCounter = MAX_TIMES_CONFIRMED;
      }
+}
+
+sub setValidOrder {
+     $validOrder = 1;
 }
 
 sub  setAgeItemNumbers {
