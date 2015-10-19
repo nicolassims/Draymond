@@ -9,9 +9,9 @@ use warnings;
 my ($customerAge, $numberItems, $continueInt, $averageAge, $totalAge, $numberAges, $underThirtyItemNumbers, $overThirtyItemNumbers, $validOrder);
 
 sub main {
-     $continueInt = 1;
-     $validOrder = 0;
+     setStartingContinueInt();
      while ($continueInt != 0) {
+          setOrderInvalid();
           setZipCode();
           setCustomerAge();
           setNumberItems();
@@ -20,11 +20,20 @@ sub main {
                setAverageAge();
                setAgeItemNumbers();
                printResults();
+               setContinueInt();
           }
      }
 }
 
 main();
+
+sub setStartingContinueInt {
+     $continueInt = 1;
+}
+
+sub setOrderInvalid {
+     $validOrder = 0;
+}
 
 sub setZipCode {
      my $zipCode = 0;
@@ -32,14 +41,14 @@ sub setZipCode {
      use constant HIGHEST_ZIPCODE => 99950;
      use constant LOWEST_ZIPCODE => 501;
      if ($zipCode < LOWEST_ZIPCODE || $zipCode > HIGHEST_ZIPCODE) { 
-          print "Please enter the customer's zip code. \n";
+          print "Please enter the customer's zip code.\n";
           chomp ($zipCode = <STDIN>);
           while ($zipCode < LOWEST_ZIPCODE || $zipCode > HIGHEST_ZIPCODE) {
-               print "That is not correct. Please enter the customer's zip code correctly. \n";
+               print "That is not correct. Please enter the customer's zip code correctly.\n";
                chomp ($zipCode = <STDIN>);
           }
           if ($zipCode == HOME_ZIPCODE) {
-               print "This one's a native. Treat them well. \n"
+               print "This one's a native. Treat them well.\n"
           }
      }
 }
@@ -49,13 +58,40 @@ sub setCustomerAge {
      use constant HIGHEST_AGE => 110;
      use constant LOWEST_AGE => 10;
      if ($customerAge < LOWEST_AGE || $customerAge > HIGHEST_AGE) { 
-          print "Please enter the customer's age. \n";
+          print "Please enter the customer's age.\n";
           chomp ($customerAge = <STDIN>);
           while ($customerAge < LOWEST_AGE || $customerAge > HIGHEST_AGE) { 
-               print "Company policy forbids us from serving under-10s and over-110s. \nAre you sure their age is correct? Please re-enter their age. \n";
+               print "Company policy forbids us from serving under-10s and over-110s.\nAre you sure their age is correct? Please re-enter their age.\n";
                chomp ($customerAge = <STDIN>);
           }
      }
+}
+
+sub setNumberItems {
+     my $confirmCounter = 0;
+     use constant MAXIMUM_ITEMS => 12;
+     use constant MINIMUM_ITEMS => 1;
+     use constant MAX_TIMES_CONFIRMED => 2;
+     while ($confirmCounter < MAX_TIMES_CONFIRMED) {
+          print "Please enter the number of items the customer is buying.\n";
+          chomp ($numberItems = <STDIN>);
+          for ($confirmCounter = 0; $numberItems > MAXIMUM_ITEMS && $confirmCounter < MAX_TIMES_CONFIRMED || $numberItems < MINIMUM_ITEMS && $confirmCounter < MAX_TIMES_CONFIRMED; $confirmCounter++) {
+               print "Are you sure? Please re-enter the number of items the customer is buying.\n";
+               chomp ($numberItems = <STDIN>);   
+          }
+          if ($confirmCounter == MAX_TIMES_CONFIRMED && $numberItems > MAXIMUM_ITEMS || $confirmCounter <= MAX_TIMES_CONFIRMED && $numberItems <= MAXIMUM_ITEMS && $numberItems >= MINIMUM_ITEMS || $confirmCounter <= MAX_TIMES_CONFIRMED && $numberItems >= MINIMUM_ITEMS) {
+               setOrderValid();
+          } else {
+               print "I'm sorry, it is impossible to purchase $numberItems items.\n";
+               sleep 3;
+               system ("cls");
+          }
+          $confirmCounter = MAX_TIMES_CONFIRMED;
+     }
+}
+
+sub setOrderValid {
+     $validOrder = 1;
 }
 
 sub  setTotalAge {
@@ -75,33 +111,6 @@ sub setAverageAge {
      $averageAge = $totalAge/$numberAges;
 }
 
-sub setNumberItems {
-     my $confirmCounter = 0;
-     use constant MAXIMUM_ITEMS => 12;
-     use constant MINIMUM_ITEMS => 1;
-     use constant MAX_TIMES_CONFIRMED => 2;
-     while ($confirmCounter < MAX_TIMES_CONFIRMED) {
-          print "Please enter the number of items the customer is buying. \n";
-          chomp ($numberItems = <STDIN>);
-          for ($confirmCounter = 0; $numberItems > MAXIMUM_ITEMS && $confirmCounter < MAX_TIMES_CONFIRMED || $numberItems < MINIMUM_ITEMS && $confirmCounter < MAX_TIMES_CONFIRMED; $confirmCounter++) {
-               print "Are you sure? Please re-enter the number of items the customer is buying. \n";
-               chomp ($numberItems = <STDIN>);   
-          }
-          if ($confirmCounter == MAX_TIMES_CONFIRMED && $numberItems > MAXIMUM_ITEMS || $confirmCounter <= MAX_TIMES_CONFIRMED && $numberItems <= MAXIMUM_ITEMS && $numberItems >= MINIMUM_ITEMS || $confirmCounter <= MAX_TIMES_CONFIRMED && $numberItems >= MINIMUM_ITEMS) {
-               setValidOrder();
-          } else {
-               print "I'm sorry, it is impossible to purchase $numberItems items. \n";
-               sleep 3;
-               system ("cls");
-          }
-          $confirmCounter = MAX_TIMES_CONFIRMED;
-     }
-}
-
-sub setValidOrder {
-     $validOrder = 1;
-}
-
 sub  setAgeItemNumbers {
      use constant DEMOGRAPHIC_CHECKER => 30;
      if (!defined $underThirtyItemNumbers && !defined $overThirtyItemNumbers) {
@@ -117,7 +126,11 @@ sub  setAgeItemNumbers {
 
 sub printResults {
      system ("cls");
-     print "Average Customer age is $averageAge. \nThe number of items ordered by people at or over 30 is $overThirtyItemNumbers. \nThe number of items ordered by people under 30 is $underThirtyItemNumbers. \nWould you like to continue? (0 for No, 1 for Yes.) \n";
+     print "Average Customer age is $averageAge.\nThe number of items ordered by people at or over 30 is $overThirtyItemNumbers.\nThe number of items ordered by people under 30 is $underThirtyItemNumbers.\n";   
+}
+
+sub setContinueInt {
+     print "Would you like to continue? (0 for No, 1 for Yes.)\n";
      chomp ($continueInt = <STDIN>);
      system ("cls");
 }
