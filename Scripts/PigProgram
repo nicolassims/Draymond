@@ -1,0 +1,80 @@
+## Assignment: Project 03
+## Author: Nicolas Sims (sableye.nico@gmail.com)
+## Version: 10.20.2015.01
+## Create the logic for the dice game Pig, in which a player can compete with the computer.
+
+use 5.14.1;
+use warnings;
+
+my ($firstDiceRoll, $secondDiceRoll, $dicePool, $gameOver, $continueTurn, $playerPoolTotal, $computerPoolTotal, $numDiceRolled, @playerDiceTotal, @computerDiceTotal);
+use constant FAILING_ROLL => 1;
+
+sub main {
+     setDicePool();
+     while (!defined $gameOver) {
+          setFirstDice();
+          setSecondDice();
+          setNumDiceRolled();
+          setPlayerDiceTotal();
+          setPlayerPoolTotal();
+          setContinueTurn();
+     }
+}
+
+main();
+
+sub setDicePool {
+     $dicePool = 6;
+}
+
+sub setFirstDice {
+     $firstDiceRoll = int(rand($dicePool)+1);
+}
+
+sub setSecondDice {
+     $secondDiceRoll = int(rand($dicePool)+1);
+}
+
+sub setNumDiceRolled {
+     use constant STARTING_ROLLS => 2;
+     if (!defined $numDiceRolled) {
+          $numDiceRolled = STARTING_ROLLS;
+     } else {
+          $numDiceRolled = @playerDiceTotal;
+     }
+}
+
+sub setPlayerDiceTotal {
+     if ($firstDiceRoll != FAILING_ROLL && $secondDiceRoll != FAILING_ROLL) {
+          for (my $i = 0; $i < $numDiceRolled; $i++) {
+               $playerDiceTotal[$i] = $firstDiceRoll;
+               $playerDiceTotal[$i++] = $secondDiceRoll;
+          }
+     }     
+}
+
+sub setPlayerPoolTotal {
+     if (!defined $playerPoolTotal) {
+          $playerPoolTotal = 0;
+     }
+     if ($firstDiceRoll != FAILING_ROLL && $secondDiceRoll != FAILING_ROLL) {
+          for (my $i = 0; $i < $numDiceRolled; $i++) {
+               $playerPoolTotal = $playerPoolTotal + $playerDiceTotal[$i];
+          }
+     }
+}
+
+sub setContinueTurn {
+     use constant CONTINUE_TURN => 1;
+     if ($firstDiceRoll != FAILING_ROLL && $secondDiceRoll != FAILING_ROLL) {
+          print "Your two rolls are $firstDiceRoll and $secondDiceRoll.\nYour total score is $playerPoolTotal.\nWould you like to continue your turn? (No = 0, Yes = 1)\n";
+          chomp ($continueTurn = <STDIN>);
+          while ($continueTurn !~ /[0-9]/ || $continueTurn != 0 && $continueTurn != CONTINUE_TURN) {
+               print "Invalid entry. Please enter either a 0 or 1. (No = 0, Yes = 1)\n";
+               chomp ($continueTurn = <STDIN>);
+               if ($continueTurn == 1) {
+                    main();
+               }
+          }
+     }
+}
