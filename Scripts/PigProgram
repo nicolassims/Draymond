@@ -18,6 +18,7 @@ sub main {
           setPlayerDiceTotal();
           setPlayerPoolTotal();
           setContinueTurn();
+          PLACEHOLDER();
      }
 }
 
@@ -48,7 +49,7 @@ sub setPlayerDiceTotal {
      if ($firstDiceRoll != FAILING_ROLL && $secondDiceRoll != FAILING_ROLL) {
           for (my $i = 0; $i < $numDiceRolled; $i++) {
                $playerDiceTotal[$i] = $firstDiceRoll;
-               $playerDiceTotal[$i++] = $secondDiceRoll;
+               $playerDiceTotal[$i + 1] = $secondDiceRoll;
           }
      }     
 }
@@ -59,7 +60,10 @@ sub setPlayerPoolTotal {
      }
      if ($firstDiceRoll != FAILING_ROLL && $secondDiceRoll != FAILING_ROLL) {
           for (my $i = 0; $i < $numDiceRolled; $i++) {
-               $playerPoolTotal = $playerPoolTotal + $playerDiceTotal[$i];
+               if (!defined $playerPoolTotal) {
+                    $playerPoolTotal = $playerDiceTotal[$i] + $playerDiceTotal[$i + 1];
+               }
+               
           }
      }
 }
@@ -77,4 +81,8 @@ sub setContinueTurn {
                }
           }
      }
+}
+
+sub PLACEHOLDER {
+     print "\nGot a 1 or two.\n"
 }
