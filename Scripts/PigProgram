@@ -6,14 +6,12 @@
 use 5.14.1;
 use warnings;
 
-my ($firstDiceRoll, $secondDiceRoll, $dicePool, $gameOver, $continueTurn, $playerPoolTotal, $computerPoolTotal, $numDiceRolled, @playerDiceTotal, @computerDiceTotal);
+my ($diceRoll, $gameOver, $continueTurn, $playerPoolTotal, $computerPoolTotal, $numDiceRolled, @playerDiceTotal, @computerDiceTotal);
 use constant FAILING_ROLL => 1;
 
 sub main {
-     setDicePool();
      while (!defined $gameOver) {
-          setFirstDice();
-          setSecondDice();
+          setDiceRoll();
           setNumDiceRolled();
           setPlayerDiceTotal();
           setPlayerPoolTotal();
@@ -24,16 +22,9 @@ sub main {
 
 main();
 
-sub setDicePool {
-     $dicePool = 6;
-}
-
-sub setFirstDice {
-     $firstDiceRoll = int(rand($dicePool)+1);
-}
-
-sub setSecondDice {
-     $secondDiceRoll = int(rand($dicePool)+1);
+sub setDiceRoll {
+     my $dicePool = 6;
+     $diceRoll = int(rand($dicePool)+1);
 }
 
 sub setNumDiceRolled {
@@ -46,10 +37,11 @@ sub setNumDiceRolled {
 }
 
 sub setPlayerDiceTotal {
-     if ($firstDiceRoll != FAILING_ROLL && $secondDiceRoll != FAILING_ROLL) {
+     if ($diceRoll != FAILING_ROLL) {
           for (my $i = 0; $i < $numDiceRolled; $i++) {
-               $playerDiceTotal[$i] = $firstDiceRoll;
-               $playerDiceTotal[$i + 1] = $secondDiceRoll;
+               $playerDiceTotal[$i] = $diceRoll;
+               print "$diceRoll \n";
+               setDiceRoll();
           }
      }     
 }
@@ -58,25 +50,22 @@ sub setPlayerPoolTotal {
      if (!defined $playerPoolTotal) {
           $playerPoolTotal = 0;
      }
-     if ($firstDiceRoll != FAILING_ROLL && $secondDiceRoll != FAILING_ROLL) {
+     if ($diceRoll != FAILING_ROLL) {
           for (my $i = 0; $i < $numDiceRolled; $i++) {
-               if (!defined $playerPoolTotal) {
-                    $playerPoolTotal = $playerDiceTotal[$i] + $playerDiceTotal[$i + 1];
-               }
-               
+               $playerPoolTotal = $playerPoolTotal + $playerDiceTotal[$i]; 
           }
      }
 }
 
 sub setContinueTurn {
      use constant CONTINUE_TURN => 1;
-     if ($firstDiceRoll != FAILING_ROLL && $secondDiceRoll != FAILING_ROLL) {
-          print "Your two rolls are $firstDiceRoll and $secondDiceRoll.\nYour total score is $playerPoolTotal.\nWould you like to continue your turn? (No = 0, Yes = 1)\n";
+     if ($diceRoll != FAILING_ROLL) {
+          print "Your total score is $playerPoolTotal.\nWould you like to continue your turn? (No = 0, Yes = 1)\n";
           chomp ($continueTurn = <STDIN>);
           while ($continueTurn !~ /[0-9]/ || $continueTurn != 0 && $continueTurn != CONTINUE_TURN) {
                print "Invalid entry. Please enter either a 0 or 1. (No = 0, Yes = 1)\n";
                chomp ($continueTurn = <STDIN>);
-               if ($continueTurn == 1) {
+               if ($continueTurn == CONTINUE_TURN) {
                     main();
                }
           }
