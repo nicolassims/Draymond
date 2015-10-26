@@ -1,136 +1,116 @@
 ## Assignment: Project 03
 ## Author: Nicolas Sims (sableye.nico@gmail.com)
-## Version: 10.06.2015.01
-## Purpose: Create an application that will allow the Café Noir to perform Market research on its customers.
+## Version: 10.20.2015.01
+## Create the logic for the dice game Pig, in which a player can compete with the computer.
 
 use 5.14.1;
 use warnings;
 
-my ($customerAge, $numberItems, $continueInt, $averageAge, $totalAge, $numberAges, $underThirtyItemNumbers, $overThirtyItemNumbers, $validOrder);
+my ($diceRoll, $gameOver, $utterFailure, $minorFailure, $continueTurn, $roundPoolTotal, $totalPlayerPool, $computerPoolTotal, $numDiceRolled, @playerDiceTotal, @computerDiceTotal);
+use constant FAILING_ROLL => 1;
+use constant CONTINUE_TURN => 1;
 
 sub main {
-     setStartingContinueInt();
-     while ($continueInt != 0) {
-          setOrderInvalid();
-          setZipCode();
-          setCustomerAge();
-          setNumberItems();
-          if ($validOrder != 0) {
-               setTotalAge();
-               setAverageAge();
-               setAgeItemNumbers();
-               printResults();
-               setContinueInt();
-          }
+     setBeginningContinueTurn();
+     while (!defined $gameOver) {
+          setUtterFailure();
+          setMinorFailure();
+          setNumDiceRolled();
+          setPlayerDiceTotal();
+          setRoundPoolTotal();
+          setTotalPlayerPool();
+          setContinueTurn();
      }
 }
 
 main();
 
-sub setStartingContinueInt {
-     $continueInt = 1;
-}
-
-sub setOrderInvalid {
-     $validOrder = 0;
-}
-
-sub setZipCode {
-     my $zipCode = 0;
-     use constant HOME_ZIPCODE => 54984;
-     use constant HIGHEST_ZIPCODE => 99950;
-     use constant LOWEST_ZIPCODE => 501;
-     if ($zipCode < LOWEST_ZIPCODE || $zipCode > HIGHEST_ZIPCODE) { 
-          print "Please enter the customer's zip code.\n";
-          chomp ($zipCode = <STDIN>);
-          while ($zipCode < LOWEST_ZIPCODE || $zipCode > HIGHEST_ZIPCODE) {
-               print "That is not correct. Please enter the customer's zip code correctly.\n";
-               chomp ($zipCode = <STDIN>);
-          }
-          if ($zipCode == HOME_ZIPCODE) {
-               print "This one's a native. Treat them well.\n"
-          }
+sub setBeginningContinueTurn {
+     if (!defined $continueTurn) {
+          $continueTurn = CONTINUE_TURN;
      }
 }
 
-sub setCustomerAge {
-     $customerAge = 0;
-     use constant HIGHEST_AGE => 110;
-     use constant LOWEST_AGE => 10;
-     if ($customerAge < LOWEST_AGE || $customerAge > HIGHEST_AGE) { 
-          print "Please enter the customer's age.\n";
-          chomp ($customerAge = <STDIN>);
-          while ($customerAge < LOWEST_AGE || $customerAge > HIGHEST_AGE) { 
-               print "Company policy forbids us from serving under-10s and over-110s.\nAre you sure their age is correct? Please re-enter their age.\n";
-               chomp ($customerAge = <STDIN>);
-          }
-     }
+sub setDiceRoll {
+     my $dicePool = 6;
+     $diceRoll = int(rand($dicePool)+1);
 }
 
-sub setNumberItems {
-     my $confirmCounter = 0;
-     use constant MAXIMUM_ITEMS => 12;
-     use constant MINIMUM_ITEMS => 1;
-     use constant MAX_TIMES_CONFIRMED => 2;
-     while ($confirmCounter < MAX_TIMES_CONFIRMED) {
-          print "Please enter the number of items the customer is buying.\n";
-          chomp ($numberItems = <STDIN>);
-          for ($confirmCounter = 0; $numberItems > MAXIMUM_ITEMS && $confirmCounter < MAX_TIMES_CONFIRMED || $numberItems < MINIMUM_ITEMS && $confirmCounter < MAX_TIMES_CONFIRMED; $confirmCounter++) {
-               print "Are you sure? Please re-enter the number of items the customer is buying.\n";
-               chomp ($numberItems = <STDIN>);   
-          }
-          if ($confirmCounter == MAX_TIMES_CONFIRMED && $numberItems > MAXIMUM_ITEMS || $confirmCounter <= MAX_TIMES_CONFIRMED && $numberItems <= MAXIMUM_ITEMS && $numberItems >= MINIMUM_ITEMS || $confirmCounter <= MAX_TIMES_CONFIRMED && $numberItems >= MINIMUM_ITEMS) {
-               setOrderValid();
-          } else {
-               print "I'm sorry, it is impossible to purchase $numberItems items.\n";
-               sleep 3;
-               system ("cls");
-          }
-          $confirmCounter = MAX_TIMES_CONFIRMED;
-     }
-}
-
-sub setOrderValid {
-     $validOrder = 1;
-}
-
-sub  setTotalAge {
-     if (!defined $totalAge) {
-           $totalAge = $customerAge;
+sub setNumDiceRolled {
+     use constant STARTING_ROLL => 1;
+     if (!defined $numDiceRolled) {
+          $numDiceRolled = STARTING_ROLL;
      } else {
-          $totalAge = $totalAge + $customerAge;
+          $numDiceRolled = @playerDiceTotal;
      }
 }
 
-sub setAverageAge {
-     use constant BASE_NUMBER_AGES => 0;
-     if (!defined $numberAges) {
-          $numberAges = BASE_NUMBER_AGES;
+sub setPlayerDiceTotal {
+     my $i = 0;
+     setDiceRoll();
+##ADD DICE TO POOLS HERE
+     print "Rolled a $diceRoll. \n";   
+     if ($diceRoll == FAILING_ROLL) {
+          setMinorFailure();     
      }
-     $numberAges++;
-     $averageAge = $totalAge/$numberAges;
+     setDiceRoll();
+     if ($diceRoll == FAILING_ROLL) {
+          print "Rolled two ones. Failure!\n";
+          setUtterFailure();
+     }
 }
 
-sub  setAgeItemNumbers {
-     use constant DEMOGRAPHIC_CHECKER => 30;
-     if (!defined $underThirtyItemNumbers && !defined $overThirtyItemNumbers) {
-          $underThirtyItemNumbers = 0;
-          $overThirtyItemNumbers = 0;
-     }
-     if ($customerAge < DEMOGRAPHIC_CHECKER) {
-          $underThirtyItemNumbers = $underThirtyItemNumbers + $numberItems;
+sub setUtterFailure {
+     if (!defined $utterFailure) {
+          $utterFailure = 1;
+     } elsif ($utterFailure == 0) {
+          $utterFailure = 1;
      } else {
-          $overThirtyItemNumbers = $overThirtyItemNumbers + $numberItems;
+          $utterFailure = 0;
      }
 }
 
-sub printResults {
-     system ("cls");
-     print "Average Customer age is $averageAge.\nThe number of items ordered by people at or over 30 is $overThirtyItemNumbers.\nThe number of items ordered by people under 30 is $underThirtyItemNumbers.\n";   
+sub setMinorFailure {
+     if (!defined $minorFailure) {
+          $minorFailure = 1;
+     } elsif ($minorFailure == 0) {
+          $minorFailure = 1;
+     } else {
+          $minorFailure = 0;
+     }
 }
 
-sub setContinueInt {
-     print "Would you like to continue? (0 for No, 1 for Yes.)\n";
-     chomp ($continueInt = <STDIN>);
-     system ("cls");
+sub setRoundPoolTotal {
+     if ($minorFailure == 0 || $utterFailure == 0) {
+          $roundPoolTotal = 0;
+          print "Lost all points from this round.\n"
+     } else {
+          for (my $i = 0; $i < $numDiceRolled; $i++) {
+               $roundPoolTotal = $roundPoolTotal + $playerDiceTotal[$i];
+          }
+     }
+}
+
+sub setTotalPlayerPool {
+     if ($utterFailure == 0) {
+          $totalPlayerPool = 0;
+          print "Lost all points, total, in fact.\n"
+     }
+     if ($continueTurn == 0) {
+          $totalPlayerPool = $totalPlayerPool + $roundPoolTotal;
+     }
+}
+
+sub setContinueTurn {
+     if ($minorFailure == 0 || $utterFailure == 0) {
+          print "Your total score for this round is $roundPoolTotal.\nYour total score is $totalPlayerPool.\nWould you like to continue your turn? (No = 0, Yes = 1)\n";
+          chomp ($continueTurn = <STDIN>);
+          while ($continueTurn !~ /[0-9]/ || $continueTurn != 0 && $continueTurn != CONTINUE_TURN) {
+               print "Invalid entry. Please enter either a 0 or 1. (No = 0, Yes = 1)\n";
+               chomp ($continueTurn = <STDIN>);
+               if ($continueTurn == CONTINUE_TURN) {
+                     main();
+               }    
+          }
+     }
 }
