@@ -16,9 +16,8 @@ sub main {
           setUtterFailure();
           setMinorFailure();
           setNumDiceRolled();
-          setPlayerDiceTotal();
+          rollDice();
           setRoundPoolTotal();
-          setTotalPlayerPool();
           setContinueTurn();
      }
 }
@@ -34,10 +33,11 @@ sub setBeginningContinueTurn {
 sub setDiceRoll {
      my $dicePool = 6;
      $diceRoll = int(rand($dicePool)+1);
+     print "Rolled a $diceRoll. \n"
 }
 
 sub setNumDiceRolled {
-     use constant STARTING_ROLL => 1;
+     use constant STARTING_ROLL => 2;
      if (!defined $numDiceRolled) {
           $numDiceRolled = STARTING_ROLL;
      } else {
@@ -45,18 +45,56 @@ sub setNumDiceRolled {
      }
 }
 
-sub setPlayerDiceTotal {
+sub rollDice {
      my $i = 0;
      setDiceRoll();
-##ADD DICE TO POOLS HERE
-     print "Rolled a $diceRoll. \n";   
      if ($diceRoll == FAILING_ROLL) {
-          setMinorFailure();     
+          print "Rolled a one. Failure!\n";
+          setMinorFailure();
+          setPlayerDiceTotal();
+          setDiceRoll();
+          if ($diceRoll == FAILING_ROLL) {
+               print "Rolled two ones. Failure!\n";
+               setUtterFailure();
+          }
      }
+     setPlayerDiceTotal();
      setDiceRoll();
      if ($diceRoll == FAILING_ROLL) {
-          print "Rolled two ones. Failure!\n";
-          setUtterFailure();
+          print "Rolled a one. Failure!\n";
+          setMinorFailure();
+     }
+     setPlayerDiceTotal();
+}
+
+sub setPlayerDiceTotal {
+     my $counter = 0;
+     if ($utterFailure == 0) {
+          for (my $i = 0; $i < $numDiceRolled; $i++) {
+               $playerDiceTotal[$i] = 0;
+          }
+     } elsif ($minorFailure == 0) {
+          for (my $i = 0; $i == 0; $i++) {
+               $playerDiceTotal[$i] = 0;
+          }               
+     } else {
+          if (defined $playerDiceTotal[$counter]) {
+               $counter++;
+          }
+          $playerDiceTotal[$counter] = $diceRoll;
+     }
+}
+
+sub setRoundPoolTotal {
+     if (!defined $roundPoolTotal) {
+          $roundPoolTotal = 0;
+     }
+     if ($minorFailure == 0 || $utterFailure == 0) {
+          $roundPoolTotal = 0;
+     } else {
+          for (my $i = 0; $i < $numDiceRolled; $i++) {
+               $roundPoolTotal = $roundPoolTotal + $playerDiceTotal[$i];
+          }
      }
 }
 
@@ -80,21 +118,9 @@ sub setMinorFailure {
      }
 }
 
-sub setRoundPoolTotal {
-     if ($minorFailure == 0 || $utterFailure == 0) {
-          $roundPoolTotal = 0;
-          print "Lost all points from this round.\n"
-     } else {
-          for (my $i = 0; $i < $numDiceRolled; $i++) {
-               $roundPoolTotal = $roundPoolTotal + $playerDiceTotal[$i];
-          }
-     }
-}
-
 sub setTotalPlayerPool {
      if ($utterFailure == 0) {
           $totalPlayerPool = 0;
-          print "Lost all points, total, in fact.\n"
      }
      if ($continueTurn == 0) {
           $totalPlayerPool = $totalPlayerPool + $roundPoolTotal;
@@ -103,7 +129,7 @@ sub setTotalPlayerPool {
 
 sub setContinueTurn {
      if ($minorFailure == 0 || $utterFailure == 0) {
-          print "Your total score for this round is $roundPoolTotal.\nYour total score is $totalPlayerPool.\nWould you like to continue your turn? (No = 0, Yes = 1)\n";
+          print "Your total score for this round is $roundPoolTotal.\nWould you like to continue your turn? (No = 0, Yes = 1)\n";
           chomp ($continueTurn = <STDIN>);
           while ($continueTurn !~ /[0-9]/ || $continueTurn != 0 && $continueTurn != CONTINUE_TURN) {
                print "Invalid entry. Please enter either a 0 or 1. (No = 0, Yes = 1)\n";
