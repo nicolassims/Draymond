@@ -6,24 +6,49 @@
 use 5.14.1;
 use warnings;
 
-my ($diceRoll, $diceRoll1, $diceRoll2,$gameOver, $utterFailure, $minorFailure, $continueTurn, $roundPoolTotal, $totalPlayerPool, $computerPoolTotal, $numDiceRolled, @playerDiceTotal, @computerDiceTotal);
+my ($diceRoll, $diceRoll1, $diceRoll2,$dicePool, $gameOver, $utterFailure, $pauseComputer, $minorFailure, $continueTurn, $roundPoolTotal, $totalPlayerPool, $computerPoolTotal, $numDiceRolled, @playerDiceTotal);
 use constant FAILING_ROLL => 1;
 use constant CONTINUE_TURN => 1;
+use constant NOT_FAILURE => 1;
 
 sub main {
+     setDicePool();
      setBeginningContinueTurn();
      while (!defined $gameOver) {
           setUtterFailure();
           setMinorFailure();
           setNumDiceRolled();
           setRoundPoolTotal();
+          setTotalPlayerPool();
           while ($continueTurn == CONTINUE_TURN) {
-               rollDice();
+               setDiceRoll();
+               setDiceRoll1();
+               if ($diceRoll1 == FAILING_ROLL) {
+                    setMinorFailure();
+                    failMessage();
+                    setPlayerDiceTotal();
+                    setDiceRoll();
+                    setDiceRoll2();
+                    if ($diceRoll2 == FAILING_ROLL) {
+                         setUtterFailure();
+                         failMessage();
+                    }
+               } else {
+                    setPlayerDiceTotal();
+                    setDiceRoll();
+                    setDiceRoll2();
+                    if ($diceRoll2 == FAILING_ROLL) {
+                         setMinorFailure();
+                         failMessage();
+                    }
+                    setPlayerDiceTotal();
+               } 
                setRoundPoolTotal();
-               setContinueTurn();
                setNumDiceRolled();
+               setContinueTurn();
           }
           setTotalPlayerPool();
+          computerTurn();
      }
 }
 
@@ -35,10 +60,21 @@ sub setBeginningContinueTurn {
      }
 }
 
+sub setDicePool {
+     $dicePool = 6;
+}
+
 sub setDiceRoll {
-     my $dicePool = 6;
      $diceRoll = int(rand($dicePool)+1);
      print "Rolled a $diceRoll. \n"
+}
+
+sub failMessage {
+     if ($minorFailure == 0) {
+          print "Rolled a one. Failure!\n";
+     } else {
+          print "Rolled two ones. Failure!\n";
+     }
 }
 
 sub setNumDiceRolled {
@@ -57,31 +93,6 @@ sub setDiceRoll1 {
 
 sub setDiceRoll2 {
      $diceRoll2 = $diceRoll;
-}
-
-sub rollDice {
-     setDiceRoll();
-     setDiceRoll1();
-     if ($diceRoll == FAILING_ROLL) {
-          print "Rolled a one. Failure!\n";
-          setMinorFailure();
-          setPlayerDiceTotal();
-          setDiceRoll();
-          setDiceRoll2();
-          if ($diceRoll == FAILING_ROLL) {
-               print "Rolled two ones. Failure!\n";
-               setUtterFailure();
-          }
-     } else {
-          setPlayerDiceTotal();
-          setDiceRoll();
-          setDiceRoll2();
-          if ($diceRoll == FAILING_ROLL) {
-               print "Rolled a one. Failure!\n";
-               setMinorFailure();
-          }
-          setPlayerDiceTotal();
-     } 
 }
 
 sub setPlayerDiceTotal {
@@ -115,9 +126,9 @@ sub setRoundPoolTotal {
 
 sub setUtterFailure {
      if (!defined $utterFailure) {
-          $utterFailure = 1;
+          $utterFailure = NOT_FAILURE;
      } elsif ($utterFailure == 0) {
-          $utterFailure = 1;
+          $utterFailure = NOT_FAILURE;
      } else {
           $utterFailure = 0;
      }
@@ -125,15 +136,18 @@ sub setUtterFailure {
 
 sub setMinorFailure {
      if (!defined $minorFailure) {
-          $minorFailure = 1;
+          $minorFailure = NOT_FAILURE;
      } elsif ($minorFailure == 0) {
-          $minorFailure = 1;
+          $minorFailure = NOT_FAILURE;
      } else {
           $minorFailure = 0;
      }
 }
 
 sub setTotalPlayerPool {
+     if (!defined $totalPlayerPool) {
+          $totalPlayerPool = 0;
+     }
      if ($utterFailure == 0) {
           $totalPlayerPool = 0;
      } else {
@@ -142,12 +156,93 @@ sub setTotalPlayerPool {
 }
 
 sub setContinueTurn {
-     if ($minorFailure != 0 || $utterFailure != 0) {
+     if ($minorFailure != 0 && $utterFailure != 0) {
           print "Your total score for this round is $roundPoolTotal.\nWould you like to continue your turn? (No = 0, Yes = 1)\n";
           chomp ($continueTurn = <STDIN>);
           while ($continueTurn !~ /[0-9]/ || $continueTurn != 0 && $continueTurn != CONTINUE_TURN) {
                print "Invalid entry. Please enter either a 0 or 1. \nWould you like to continue your turn? (No = 0, Yes = 1)\n";
                chomp ($continueTurn = <STDIN>);
           }
+          if ($continueTurn != CONTINUE_TURN) {
+              print "Your total score is $totalPlayerPool.\n"
+          }
+     } else {
+          print "Your total score for this round is $roundPoolTotal.\nYour total score is $totalPlayerPool.\n";
+          $continueTurn = 0;
      }
+}
+
+sub computerTurn {
+     pauseComputer();
+     resetComputerScore();
+     while ($pauseComputer != 0) {
+          setComputerDiceRoll();
+          setComputerDiceRoll1();
+          setComputerDiceRoll();
+          setComputerDiceRoll2();
+          if ($diceRoll1 == FAILING_ROLL) {
+               if ($diceRoll2 == FAILING_ROLL) {
+                    resetComputerScore();
+                    computerFailed();
+               } else {
+                    computerFailed();
+                    stopComputer();
+               }
+          } else {
+               if ($diceRoll2 == FAILING_ROLL) {
+                    computerFailed();
+                    stopComputer();
+               } else {
+                    setComputerScore();
+                    pauseComputer();
+               } 
+          }
+     }
+}
+
+sub setComputerDiceRoll {
+     $diceRoll = int(rand($dicePool)+1);
+     print "GLaDOS rolled a $diceRoll.\n"
+}
+
+sub setComputerDiceRoll1 {
+     $diceRoll1 = $diceRoll;
+}
+
+sub setComputerDiceRoll2 {
+     $diceRoll2 = $diceRoll;
+}
+
+sub computerFailed {
+     print "GLaDOS failed.\n"
+}
+
+sub resetComputerScore {
+     if (!defined $computerPoolTotal) {
+          $computerPoolTotal = 0;
+     }
+}
+
+sub setComputerScore {
+     $computerPoolTotal = $computerPoolTotal + $diceRoll1 + $diceRoll2;
+}
+
+sub pauseComputer {
+     my $pauseRNG = 1;
+     use constant COMPUTER_PAUSED => 2;
+     if (!defined $pauseComputer) {
+          $pauseComputer = COMPUTER_PAUSED;
+     } else {
+          print "Will GLaDOS continue?\n";
+          $pauseComputer= int(rand($pauseRNG)+1);
+          if ($pauseRNG == 0) {
+               print "No. Player turn start.\n";
+          } else {
+               print "Apparently, yes.\n";
+          }
+     }
+}
+
+sub stopComputer {
+     $pauseComputer = 0
 }
