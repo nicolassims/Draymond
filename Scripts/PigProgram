@@ -12,6 +12,7 @@ use constant CONTINUE_TURN => 1;
 use constant NOT_FAILURE => 1;
 
 sub main {
+     resetComputerScore();
      setDicePool();
      setBeginningContinueTurn();
      while (!defined $gameOver) {
@@ -42,22 +43,47 @@ sub main {
                          failMessage();
                     }
                     setPlayerDiceTotal();
-               } 
+               }
                setRoundPoolTotal();
                setNumDiceRolled();
                setContinueTurn();
           }
+          setRoundPoolTotal();
           setTotalPlayerPool();
-          computerTurn();
+          startComputer();
+          while ($pauseComputer != 1) {
+               setComputerDiceRoll();
+               setComputerDiceRoll1();
+               setComputerDiceRoll();
+               setComputerDiceRoll2();
+               if ($diceRoll1 == FAILING_ROLL) {
+                    if ($diceRoll2 == FAILING_ROLL) {
+                         computerFailed();
+                         resetComputerScore();
+                         stopComputer();
+                    } else {
+                         computerFailed();
+                         stopComputer();
+                    }
+               } else {
+                    if ($diceRoll2 == FAILING_ROLL) {
+                         computerFailed();
+                         stopComputer();
+                    } else {
+                         setComputerScore();
+                         setPauseComputer();
+                    } 
+               }
+          }
+          setBeginningContinueTurn();
      }
+     startComputer();
 }
 
 main();
 
 sub setBeginningContinueTurn {
-     if (!defined $continueTurn) {
-          $continueTurn = CONTINUE_TURN;
-     }
+     $continueTurn = CONTINUE_TURN;
 }
 
 sub setDicePool {
@@ -66,7 +92,8 @@ sub setDicePool {
 
 sub setDiceRoll {
      $diceRoll = int(rand($dicePool)+1);
-     print "Rolled a $diceRoll. \n"
+     print "Rolled a $diceRoll. \n";
+     sleep 1;
 }
 
 sub failMessage {
@@ -172,37 +199,10 @@ sub setContinueTurn {
      }
 }
 
-sub computerTurn {
-     pauseComputer();
-     resetComputerScore();
-     while ($pauseComputer != 0) {
-          setComputerDiceRoll();
-          setComputerDiceRoll1();
-          setComputerDiceRoll();
-          setComputerDiceRoll2();
-          if ($diceRoll1 == FAILING_ROLL) {
-               if ($diceRoll2 == FAILING_ROLL) {
-                    resetComputerScore();
-                    computerFailed();
-               } else {
-                    computerFailed();
-                    stopComputer();
-               }
-          } else {
-               if ($diceRoll2 == FAILING_ROLL) {
-                    computerFailed();
-                    stopComputer();
-               } else {
-                    setComputerScore();
-                    pauseComputer();
-               } 
-          }
-     }
-}
-
 sub setComputerDiceRoll {
      $diceRoll = int(rand($dicePool)+1);
-     print "GLaDOS rolled a $diceRoll.\n"
+     print "GLaDOS rolled a $diceRoll.\n";
+     sleep 1;
 }
 
 sub setComputerDiceRoll1 {
@@ -214,35 +214,36 @@ sub setComputerDiceRoll2 {
 }
 
 sub computerFailed {
-     print "GLaDOS failed.\n"
+     print "GLaDOS failed.\n";
 }
 
 sub resetComputerScore {
-     if (!defined $computerPoolTotal) {
-          $computerPoolTotal = 0;
-     }
+     $computerPoolTotal = 0;
 }
 
 sub setComputerScore {
      $computerPoolTotal = $computerPoolTotal + $diceRoll1 + $diceRoll2;
+     print "GLaDOS' score is $computerPoolTotal.\n"
 }
 
-sub pauseComputer {
-     my $pauseRNG = 1;
-     use constant COMPUTER_PAUSED => 2;
-     if (!defined $pauseComputer) {
-          $pauseComputer = COMPUTER_PAUSED;
+sub setPauseComputer {
+     my $pauseRNG = 2;
+     print "Will GLaDOS continue?\n";
+     $pauseComputer = int(rand($pauseRNG)+1);
+     if ($pauseComputer == 0) {
+          print "No. Player turn start.\n";
+          sleep 1;
      } else {
-          print "Will GLaDOS continue?\n";
-          $pauseComputer= int(rand($pauseRNG)+1);
-          if ($pauseRNG == 0) {
-               print "No. Player turn start.\n";
-          } else {
-               print "Apparently, yes.\n";
-          }
+          print "Apparently, yes.\n";
+          sleep 1;
      }
+     
+}
+
+sub startComputer {
+     $pauseComputer = 0;
 }
 
 sub stopComputer {
-     $pauseComputer = 0
+     $pauseComputer = 1;
 }
