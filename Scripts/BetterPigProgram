@@ -1,0 +1,163 @@
+## Assignment: Project 03
+## Author: Nicolas Sims (sableye.nico@gmail.com)
+## Version: 10.20.2015.99
+## Create the logic for the dice game Pig, in which a player can compete with the computer.
+
+use 5.14.1;
+use warnings;
+
+my ($diceRoll1, $diceRoll2, $dicePool, $playerScore, $compScore, $totalPlayerScore, $totalCompScore, $playerTurn);
+use constant FAILING_ROLL => 1;
+use constant WINNING_SCORE => 15;
+use constant PLAYER_TURN => 1;
+
+sub main {
+     setDicePool();
+     setCompScore();
+     setPlayerScore();
+     setPlayerTurn();
+     setTotalPlayerScore();
+     setTotalCompScore();
+     while ($totalPlayerScore <= WINNING_SCORE && $totalCompScore <= WINNING_SCORE) {
+          if ($playerTurn == PLAYER_TURN) {
+               setDice1();
+               setDice2();
+               setPlayerScore();
+               setPlayerTurn();
+               if ($playerTurn != PLAYER_TURN && $diceRoll1 != FAILING_ROLL && $diceRoll2 != FAILING_ROLL) {
+                    setTotalPlayerScore();
+                    setPlayerScore();
+               }
+          } else {
+               setDice1();
+               setDice2();
+               setCompScore();
+               setCompTurn();
+               if ($playerTurn == PLAYER_TURN && $diceRoll1 != FAILING_ROLL && $diceRoll2 != FAILING_ROLL) {
+                    setTotalCompScore();
+                    setCompScore();
+               }
+          }
+     }
+     printVictoryMessage();
+}
+
+main();
+
+sub setTotalPlayerScore {
+     if (!defined $totalPlayerScore || $diceRoll1 == FAILING_ROLL && $diceRoll2 == FAILING_ROLL) {
+          $totalPlayerScore = 0;
+     } else {
+          $totalPlayerScore = $totalPlayerScore + $playerScore;
+     }
+}
+
+sub setTotalCompScore {
+     if (!defined $totalCompScore || $diceRoll1 == FAILING_ROLL && $diceRoll2 == FAILING_ROLL) {
+          $totalCompScore = 0;
+     } else {
+          $totalCompScore = $totalCompScore + $compScore;
+     }
+}
+
+sub setDicePool {
+     $dicePool = 6;
+}
+
+sub setDice1 {
+     $diceRoll1 = int(rand($dicePool)+1);
+     if ($playerTurn != 0) {
+          print "Rolled a $diceRoll1.\n";
+          sleep 1;
+     } else {
+          print "COMP rolled a $diceRoll1.\n";
+          sleep 1;
+     }
+}
+
+sub setDice2 {
+     $diceRoll2 = int(rand($dicePool)+1);
+     if ($playerTurn != 0) {
+          print "Rolled a $diceRoll2.\n";
+          sleep 1;
+     } else {
+          print "COMP rolled a $diceRoll2.\n";
+          sleep 1;
+     }
+} 
+
+sub setCompScore {
+     if (!defined $compScore || $playerTurn != 0) {
+          $compScore = 0;
+     } else {
+          if ($diceRoll1 == FAILING_ROLL && $diceRoll2 == FAILING_ROLL) {
+               print "COMP malfunctioned. Score reset.\n";
+               $compScore = 0;
+          } elsif ($diceRoll1 == FAILING_ROLL || $diceRoll2 == FAILING_ROLL) {
+               print "COMP whiffed. Score unchanged.\n";
+               $compScore = 0;
+          } else {
+               $compScore = $compScore + $diceRoll1 + $diceRoll2;
+          }
+     }
+}
+
+sub setPlayerScore {
+     if (!defined $playerScore || $playerTurn == 0) {
+          $playerScore = 0;
+     } else {
+          if ($diceRoll1 == FAILING_ROLL && $diceRoll2 == FAILING_ROLL) {
+               print "Bad roll. Score reset.\n";
+               $playerScore = 0;
+          } elsif ($diceRoll1 == FAILING_ROLL || $diceRoll2 == FAILING_ROLL) {
+               print "Poor roll. Rolls uncounted.\n";
+               $playerScore = 0;
+          } else {
+               $playerScore = $playerScore + $diceRoll1 + $diceRoll2;
+          }
+     }       
+}
+
+sub setPlayerTurn {
+     if (!defined $playerTurn) {
+          $playerTurn = PLAYER_TURN;
+     } elsif ($diceRoll1 == FAILING_ROLL || $diceRoll2 == FAILING_ROLL) {
+          $playerTurn = 0;
+     } else {
+          print "Your total score for this round is $playerScore.\nYour total score is $totalPlayerScore.\nWould you like to continue your turn? (No = 0, Yes = 1)\n";
+          chomp ($playerTurn = <STDIN>);
+          while ($playerTurn !~ /[0-9]/ || $playerTurn != 0 && $playerTurn != PLAYER_TURN) {
+               print "Invalid entry. Please enter either a 0 or 1.\nWould you like to continue your turn? (No = 0, Yes = 1)\n";
+               chomp ($playerTurn = <STDIN>);
+          }
+     }
+}
+
+sub setCompTurn {
+     my $endRNG = 2;
+     my $endTurnTotal = 0;
+     $endTurnTotal = $totalCompScore + $compScore;
+     if ($diceRoll1 == FAILING_ROLL || $diceRoll2 == FAILING_ROLL) {
+          $playerTurn = PLAYER_TURN;
+     } elsif ($endTurnTotal >= WINNING_SCORE) {
+          $playerTurn = PLAYER_TURN;
+     } else {
+          print "COMP's total score for this round is $compScore.\nCOMP's total score is $totalCompScore.\n";
+          $playerTurn = int(rand($endRNG));
+          if ($playerTurn != PLAYER_TURN) {
+               print "COMP continues. Player standby.\n";
+          } else {
+               print "COMP yields. Player go.\n";
+          }
+     }
+}
+
+sub printVictoryMessage {
+     if ($totalPlayerScore <= WINNING_SCORE) {
+          print "COMP won! You failed!\n";
+          sleep 3;
+     } else {
+          print "You won! COMP failed!\n";
+          sleep 3;
+     }
+}
