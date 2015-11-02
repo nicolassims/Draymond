@@ -6,12 +6,13 @@
 use 5.14.1;
 use warnings;
 
-my ($diceRoll1, $diceRoll2, $dicePool, $playerScore, $compScore, $totalPlayerScore, $totalCompScore, $playerTurn);
+my ($i, $dicePool, $playerScore, $compScore, $totalPlayerScore, $totalCompScore, $playerTurn, @diceRolls);
 use constant FAILING_ROLL => 1;
 use constant WINNING_SCORE => 100;
 use constant PLAYER_TURN => 1;
 
 sub main {
+     setIncrementer();
      setDicePool();
      setCompScore();
      setPlayerScore();
@@ -20,20 +21,20 @@ sub main {
      setTotalCompScore();
      while ($totalPlayerScore <= WINNING_SCORE && $totalCompScore <= WINNING_SCORE) {
           if ($playerTurn == PLAYER_TURN) {
-               setDice1();
-               setDice2();
+               setDiceRolls();
+               setIncrementer();
                setPlayerScore();
                setPlayerTurn();
-               if ($playerTurn != PLAYER_TURN && $diceRoll1 != FAILING_ROLL && $diceRoll2 != FAILING_ROLL) {
+               if ($playerTurn != PLAYER_TURN && $diceRolls[$i] != FAILING_ROLL && $diceRolls[$i + 1] != FAILING_ROLL) {
                     setTotalPlayerScore();
                     setPlayerScore();
                }
           } else {
-               setDice1();
-               setDice2();
+               setDiceRolls();
+               setIncrementer();
                setCompScore();
                setPlayerTurn();
-               if ($playerTurn == PLAYER_TURN && $diceRoll1 != FAILING_ROLL && $diceRoll2 != FAILING_ROLL) {
+               if ($playerTurn == PLAYER_TURN && $diceRolls[$i] != FAILING_ROLL && $diceRolls[$i + 1] != FAILING_ROLL) {
                     setTotalCompScore();
                     setCompScore();
                }
@@ -44,6 +45,10 @@ sub main {
 
 main();
 
+sub setIncrementer {
+     $i = 0;
+}
+
 sub setDicePool {
      use constant SIDES_DICE => 6;
      $dicePool = SIDES_DICE;
@@ -53,14 +58,14 @@ sub setCompScore {
      if (!defined $compScore || $playerTurn != 0) {
           $compScore = 0;
      } else {
-          if ($diceRoll1 == FAILING_ROLL && $diceRoll2 == FAILING_ROLL) {
+          if ($diceRolls[$i] == FAILING_ROLL && $diceRolls[$i + 1] == FAILING_ROLL) {
                print "COMP malfunctioned. Score reset.\n";
                $compScore = 0;
-          } elsif ($diceRoll1 == FAILING_ROLL || $diceRoll2 == FAILING_ROLL) {
+          } elsif ($diceRolls[$i] == FAILING_ROLL || $diceRolls[$i + 1] == FAILING_ROLL) {
                print "COMP whiffed. Score unchanged.\n";
                $compScore = 0;
           } else {
-               $compScore = $compScore + $diceRoll1 + $diceRoll2;
+               $compScore = $compScore + $diceRolls[$i] + $diceRolls[$i + 1];
           }
      }
 }
@@ -69,14 +74,14 @@ sub setPlayerScore {
      if (!defined $playerScore || $playerTurn == 0) {
           $playerScore = 0;
      } else {
-          if ($diceRoll1 == FAILING_ROLL && $diceRoll2 == FAILING_ROLL) {
+          if ($diceRolls[$i] == FAILING_ROLL && $diceRolls[$i + 1] == FAILING_ROLL) {
                print "Bad roll. Score reset.\n";
                $playerScore = 0;
-          } elsif ($diceRoll1 == FAILING_ROLL || $diceRoll2 == FAILING_ROLL) {
+          } elsif ($diceRolls[$i] == FAILING_ROLL || $diceRolls[$i + 1] == FAILING_ROLL) {
                print "Poor roll. Rolls uncounted.\n";
                $playerScore = 0;
           } else {
-               $playerScore = $playerScore + $diceRoll1 + $diceRoll2;
+               $playerScore = $playerScore + $diceRolls[$i] + $diceRolls[$i + 1];
           }
      }       
 }
@@ -85,7 +90,7 @@ sub setPlayerTurn {
      if (!defined $playerTurn || $playerTurn == PLAYER_TURN) {
           if (!defined $playerTurn) {
                $playerTurn = PLAYER_TURN;
-          } elsif ($diceRoll1 == FAILING_ROLL || $diceRoll2 == FAILING_ROLL) {
+          } elsif ($diceRolls[$i] == FAILING_ROLL || $diceRolls[$i + 1] == FAILING_ROLL) {
                $playerTurn = 0;
           } else {
                print "Your total score for this round is $playerScore.\nYour total score is $totalPlayerScore.\nWould you like to continue your turn? (No = 0, Yes = 1)\n";
@@ -99,7 +104,7 @@ sub setPlayerTurn {
           use constant SIDES_COIN => 2;
           my $endRNG = SIDES_COIN;
           my $endTurnTotal = $totalCompScore + $compScore;
-          if ($diceRoll1 == FAILING_ROLL || $diceRoll2 == FAILING_ROLL || $endTurnTotal >= WINNING_SCORE) {
+          if ($diceRolls[$i] == FAILING_ROLL || $diceRolls[$i + 1] == FAILING_ROLL || $endTurnTotal >= WINNING_SCORE) {
                $playerTurn = PLAYER_TURN;
           } else {
                print "COMP's total score for this round is $compScore.\nCOMP's total score is $totalCompScore.\n";
@@ -114,7 +119,7 @@ sub setPlayerTurn {
 }
 
 sub setTotalPlayerScore {
-     if (!defined $totalPlayerScore || $diceRoll1 == FAILING_ROLL && $diceRoll2 == FAILING_ROLL) {
+     if (!defined $totalPlayerScore || $diceRolls[$i] == FAILING_ROLL && $diceRolls[$i + 1] == FAILING_ROLL) {
           $totalPlayerScore = 0;
      } else {
           $totalPlayerScore = $totalPlayerScore + $playerScore;
@@ -122,34 +127,19 @@ sub setTotalPlayerScore {
 }
 
 sub setTotalCompScore {
-     if (!defined $totalCompScore || $diceRoll1 == FAILING_ROLL && $diceRoll2 == FAILING_ROLL) {
+     if (!defined $totalCompScore || $diceRolls[$i] == FAILING_ROLL && $diceRolls[$i + 1] == FAILING_ROLL) {
           $totalCompScore = 0;
      } else {
           $totalCompScore = $totalCompScore + $compScore;
      }
 }
 
-sub setDice1 {
-     $diceRoll1 = int(rand($dicePool)+1);
-     if ($playerTurn != 0) {
-          print "Rolled a $diceRoll1.\n";
-          sleep 1;
-     } else {
-          print "COMP rolled a $diceRoll1.\n";
-          sleep 1;
+sub setDiceRolls {
+     for ($i = 0; $i < 2; $i++) {
+          $diceRolls[$i] = int(rand($dicePool)+1);
+          print "Rolled a $diceRolls[$i].\n";
      }
 }
-
-sub setDice2 {
-     $diceRoll2 = int(rand($dicePool)+1);
-     if ($playerTurn != 0) {
-          print "Rolled a $diceRoll2.\n";
-          sleep 1;
-     } else {
-          print "COMP rolled a $diceRoll2.\n";
-          sleep 1;
-     }
-} 
 
 sub printVictoryMessage {
      if ($totalPlayerScore <= WINNING_SCORE) {
