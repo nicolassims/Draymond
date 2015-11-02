@@ -137,7 +137,11 @@ sub setTotalCompScore {
 sub setDiceRolls {
      for ($i = 0; $i < 2; $i++) {
           $diceRolls[$i] = int(rand($dicePool)+1);
-          print "Rolled a $diceRolls[$i].\n";
+          if ($playerTurn != 0) {
+               print "Rolled a $diceRolls[$i].\n";
+          } else {
+               print "COMP rolled a $diceRolls[$i].\n";
+          }
      }
 }
 
