@@ -45,7 +45,8 @@ sub main {
 main();
 
 sub setDicePool {
-     $dicePool = 6;
+     use constant SIDES_DICE => 6;
+     $dicePool = SIDES_DICE;
 }
 
 sub setCompScore {
@@ -81,7 +82,7 @@ sub setPlayerScore {
 }
 
 sub setPlayerTurn {
-     if (!defined $playerTurn || $playerTurn == 1) {
+     if (!defined $playerTurn || $playerTurn == PLAYER_TURN) {
           if (!defined $playerTurn) {
                $playerTurn = PLAYER_TURN;
           } elsif ($diceRoll1 == FAILING_ROLL || $diceRoll2 == FAILING_ROLL) {
@@ -95,7 +96,8 @@ sub setPlayerTurn {
                }
           }
      } else {
-          my $endRNG = 2;
+          use constant SIDES_COIN => 2;
+          my $endRNG = SIDES_COIN;
           my $endTurnTotal = $totalCompScore + $compScore;
           if ($diceRoll1 == FAILING_ROLL || $diceRoll2 == FAILING_ROLL || $endTurnTotal >= WINNING_SCORE) {
                $playerTurn = PLAYER_TURN;
