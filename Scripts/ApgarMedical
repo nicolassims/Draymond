@@ -1,0 +1,73 @@
+## Assignment: Project 05
+## Author: Nicolas Sims (sableye.nico@gmail.com)
+## Version: 11.03.2015.01
+## Design the logic for the Apgar Medical group client database.
+
+use 5.14.1;
+use warnings;
+
+my @combinedList;
+use constant DATA_FILE_CUSHING => "/netapp1b/STUDDOC/karayakaylar.ne.s/Desktop/ApgarMedicalCushing.txt";
+use constant DATA_FILE_BEST => "/netapp1b/STUDDOC/karayakaylar.ne.s/Desktop/ApgarMedicalBest.txt";
+use constant DATA_FILE_COMBINED => "/netapp1b/STUDDOC/karayakaylar.ne.s/Desktop/ApgarMedicalBest.txt";
+use constant COLUMNS => 3;
+	
+sub main {
+     openFiles();
+	sortPatients();
+}
+
+main();
+
+sub openFiles {
+     my $counter = 0;
+	my $IN;
+	my @tempData;
+	@combinedList = ();
+	open ($IN, '<', DATA_FILE_CUSHING);
+	while (<$IN>) {
+		@tempData = split(/,/);
+		for (my $i = 0; $i < COLUMNS; $i++) {
+			chomp ($combinedList[$counter][$i] = $tempData[$i]);
+		}
+		$counter++;
+	}
+	close $IN;
+	open ($IN, '<', DATA_FILE_BEST);
+	while (<$IN>) {
+		@tempData = split(/,/);
+		for (my $i = 0; $i < COLUMNS; $i++) {
+			chomp ($combinedList[$counter][$i] = $tempData[$i]);
+		}
+		$counter++;
+	}
+	close $IN;
+}
+
+sub sortPatients {
+	my $size = @combinedList; 
+	my $didSwap = 0;
+	my $tempYear;
+	my $tempAddress;
+	my $tempName;
+	use constant DID_NOT_SWAP => 1;
+	use constant YEAR_COLUMN => 2;
+	use constant ADDRESS_COLUMN => 1;
+	while ($didSwap == 0) {
+		for (my $i = 0; $i < $size; $i++) {
+			if ($combinedList[$i][YEAR_COLUMN] < $combinedList[$i + 1][YEAR_COLUMN]) {
+				$didSwap = 0;
+				$tempYear = $combinedList[$i + 1][YEAR_COLUMN];
+				$combinedList[$i + 1][YEAR_COLUMN] = $combinedList[$i][YEAR_COLUMN];
+				$combinedList[$i][YEAR_COLUMN] = $tempYear;
+				$tempAddress = $combinedList[$i + 1][ADDRESS_COLUMN];
+				$combinedList[$i + 1][ADDRESS_COLUMN] = $combinedList[$i][ADDRESS_COLUMN];
+				$combinedList[$i][ADDRESS_COLUMN] = $tempAddress;
+				$tempName = $combinedList[$i + 1][0];
+				$combinedList[$i + 1][0] = $combinedList[$i][0];
+				$combinedList[$i][0] = $tempName;
+				
+			}
+		}
+	}
+}
