@@ -47,26 +47,20 @@ sub openFiles {
 sub sortPatients {
 	my $size = @combinedList; 
 	my $didSwap = 0;
-	my $tempYear;
-	my $tempAddress;
-	my $tempName;
+	my $tempVar;
 	use constant DID_NOT_SWAP => 1;
 	use constant YEAR_COLUMN => 2;
-	use constant ADDRESS_COLUMN => 1;
 	while ($didSwap == 0) {
 		for (my $i = 0; $i < $size; $i++) {
 			if ($combinedList[$i][YEAR_COLUMN] < $combinedList[$i + 1][YEAR_COLUMN]) {
 				$didSwap = 0;
-				$tempYear = $combinedList[$i + 1][YEAR_COLUMN];
-				$combinedList[$i + 1][YEAR_COLUMN] = $combinedList[$i][YEAR_COLUMN];
-				$combinedList[$i][YEAR_COLUMN] = $tempYear;
-				$tempAddress = $combinedList[$i + 1][ADDRESS_COLUMN];
-				$combinedList[$i + 1][ADDRESS_COLUMN] = $combinedList[$i][ADDRESS_COLUMN];
-				$combinedList[$i][ADDRESS_COLUMN] = $tempAddress;
-				$tempName = $combinedList[$i + 1][0];
-				$combinedList[$i + 1][0] = $combinedList[$i][0];
-				$combinedList[$i][0] = $tempName;
-				
+				for (my $counter = 0; $counter < COLUMNS; $counter++) {
+					$tempVar = $combinedList[$i + 1][$counter];
+					$combinedList[$i + 1][$counter] = $combinedList[$i][$counter];
+					$combinedList[$i][$counter] = $tempVar;
+				}
+			} else {
+				$didSwap = DID_NOT_SWAP;
 			}
 		}
 	}
