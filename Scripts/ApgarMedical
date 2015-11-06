@@ -64,4 +64,7 @@ sub sortPatients {
 			}
 		}
 	}
+	for (my $i = 0; $i < $size; $i++) {
+		print "$combinedList[$i][0]\n";
+	}
 }
