@@ -9,155 +9,66 @@ use warnings;
 my @combinedListBest;
 my @combinedListCushing;
 my @combinedListFull;
-use constant DATA_FILE_CUSHING => "C:/Users/Administrator.141H11/Downloads/Chapter07/ApgarMedicalCushing.txt";
-use constant DATA_FILE_BEST => "C:/Users/Administrator.141H11/Downloads/Chapter07/ApgarMedicalBest.txt";
-use constant DATA_FILE_COMBINED => "C:/Users/Administrator.141H11/Downloads/Chapter07/ApgarMedicalCombined.txt";
+use constant DATA_FILE_CUSHING => "C:/Users/Owner/Desktop/Scripts, I'm Sure/Chapter07/ApgarMedicalCushing.txt";
+use constant DATA_FILE_BEST => "C:/Users/Owner/Desktop/Scripts, I'm Sure/Chapter07/ApgarMedicalBest.txt";
+use constant DATA_FILE_COMBINED => "C:/Users/Owner/Desktop/Scripts, I'm Sure/Chapter07/ApgarMedicalCombined.txt";
 use constant COLUMNS => 3;
 use constant YEAR_COLUMN => 2;
 
 sub main {
-	 openData();
-	 sortData2();
+	readData();
+	sortData();
 }
 
 main();
 
-sub openData {
-	 my $IN;
-	 my $counter = 0;
-	 my @tempData = ();
-	 @combinedListFull = ();
-	 open ($IN, '<', DATA_FILE_CUSHING);
-	 while(<$IN>) {
-		  @tempData = split(/,/);
-		  for (my $i = 0; $i < COLUMNS; $i++) {
-			   chomp ($combinedListFull[$counter][$i] = $tempData[$i]);
-		  }
-		  $counter++;
-	 }
-	 open ($IN, '<', DATA_FILE_BEST);
-	 while(<$IN>) {
-		 @tempData = split(/,/);
-		 for (my $i = 0; $i < COLUMNS; $i++) {
-			   chomp ($combinedListFull[$counter][$i] = $tempData[$i]);
-		  }
-		  $counter++;
-	 }
-	 close $IN;
+sub readData() {
+	my $IN;
+	my $counter = 0;
+	my @tempData = ();
+	my $i = 0;
+	@combinedListFull = ();
+	open ($IN, '<', DATA_FILE_CUSHING);
+	while(<$IN>) {
+		@tempData = split(/,/);
+			for (my $j = 0; $j < COLUMNS; $j++) {
+			chomp ($combinedListFull[$i][$j] = $tempData[$j]);
+		}
+		$i++;
+     }
+	open ($IN, '<', DATA_FILE_BEST);
+	while(<$IN>) {
+		@tempData = split(/,/);
+			for (my $j = 0; $j < COLUMNS; $j++) {
+			chomp ($combinedListFull[$i][$j] = $tempData[$j]);
+		}
+		$i++;
+    }
+    close $IN;
 }
 
-sub openFiles {
-	 my $counter = 0;
-	 my $IN;
-	 my @tempData;
-	 @combinedListCushing = ();
-	 @combinedListBest = ();
-	 @combinedListFull = ();
-	 open ($IN, '<', DATA_FILE_CUSHING);
-	 while (<$IN>) {
-		  @tempData = split(/,/);
-		  for (my $i = 0; $i < COLUMNS; $i++) {
-			   chomp ($combinedListCushing[$counter][$i] = $tempData[$i]);
-		  }
-		  $counter++;
-	 }
-	 close $IN;
-	 open ($IN, '<', DATA_FILE_BEST);
-	 while (<$IN>) {
-		  @tempData = split(/,/);
-		  for (my $i = 0; $i < COLUMNS; $i++) {
-			   chomp ($combinedListBest[$counter][$i] = $tempData[$i]);
-		  }  
-		  $counter++;
-	 }
-	 close $IN;
-	 my $i = 0;
-	 my $j = 0;
-	 while (defined ($combinedListBest[$i + 1][$j])) {
-		  for ($j = 0; $j < COLUMNS; $j++) {
-			   $combinedListFull[$i][$j] = $combinedListBest[$i][$j];
-		  }
-		  $i++;
-	 }
-	 while (defined ($combinedListCushing[$i + 1][$j])) {
-		  for ($j = 0; $j < COLUMNS; $j++) {
-			   $combinedListFull[$i][$j] = $combinedListCushing[$i][$j];
-		  }
-		  $i++;
-	 } 
-}
-
-sub sortData2() {    
-	 my $size = @combinedListFull;
-	 my $tempVar;
-	 my $didSwap = 0;
-	 use constant DID_NOT_SWAP => 1;
-	 while ($didSwap == 0) {
-		  $didSwap = 0; 
-		  for (my $i = 0; $i < $size; $i++) {            
-			   if (defined($combinedListFull[$i + 1])) {
-					if ($combinedListFull[$i + 1][YEAR_COLUMN] < $combinedListFull[$i][YEAR_COLUMN]) {
-						 for (my $j = 0; $j < COLUMNS; $j++) {
-							  $tempVar = $combinedListFull[$i + 1][$j];
-							  $combinedListFull[$i + 1][$j] = $combinedListFull[$i][$j];
-							  $combinedListFull[$i][$j] = $tempVar;
-							  $didSwap = 0;
-						 }
-					} else {
-						 $didSwap = DID_NOT_SWAP;
+sub sortData() {    
+	my $size = @combinedListFull;
+	my $tempVar = 0;
+	my $didSwap = 0;
+	use constant DID_NOT_SWAP => 1;
+	while ($didSwap == 0) {
+		$didSwap = DID_NOT_SWAP; 
+		for (my $i = 0; $i < $size; $i++) {            
+			if(defined($combinedListFull[$i + 1])) {
+				if($combinedListFull[$i +1][YEAR_COLUMN] < $combinedListFull[$i][YEAR_COLUMN]) {
+					for (my $j = 0; $j < COLUMNS; $j++) {
+						$tempVar = $combinedListFull[$i + 1][$j];
+						$combinedListFull[$i + 1][$j] = $combinedListFull[$i][$j];
+						$combinedListFull[$i][$j] = $tempVar;
+						$didSwap = 0;
 					}
-			   }           
-		  }
-	 }
-	 for (my $i = 0; $i < $size; $i++) {
-		  print "$combinedListFull[$i][2]\n";	  
-	 }
+					$didSwap = 0;
+				}   
+			}           
+		}
+	}
+	for (my $i = 0; $i < $size; $i++) {
+		print "$combinedListFull[$i][YEAR_COLUMN]\n";	  
+	}
 }
-
-#sub sortPatients {
-#	my $size = @combinedListFull; 
-#	my $didSwap = 0;
-#	my $tempVar;
-#	my $i = 0;
-#	use constant DID_NOT_SWAP => 1;
-#	while ($didSwap == 0) {
-#		  if ($combinedListFull[$i][YEAR_COLUMN] >= $combinedList[$i + 1][YEAR_COLUMN]) {
-##print "$combinedList[$i][YEAR_COLUMN] is less than $combinedList[$i + 1][YEAR_COLUMN])\n";
-#			   for (my $i = 0; $i < $size; $i++) {
-#					for (my $counter = 0; $counter < COLUMNS; $counter++) {
-#						 $tempVar = $combinedList[$i + 1][$counter];
-#						 $combinedList[$i + 1][$counter] = $combinedList[$i][$counter];
-#						 $combinedList[$i][$counter] = $tempVar;
-#					}
-#			   }
-#		  } else {
-##print "$combinedList[$i][YEAR_COLUMN] is not less than $combinedList[$i + 1][YEAR_COLUMN])\n";
-#			   $didSwap = DID_NOT_SWAP;
-#		  }
-#	 }
-#	 for (my $i = 0; $i < $size; $i++) {
-#		  print "$combinedList[$i][0]\n";	  
-#	 }
-#}
-#
-#sub sortData {
-#	 my $size = @combinedList;
-#	 my $tempVar;
-#	 my $didSwap = 0;
-#	 my $i;
-#	 while ($didSwap == 0) {
-#		  if(defined($combinedList[$i + 1])) {
-#			   for ($i = 0; $i < $size; $i++) { 
-#					$didSwap = DID_NOT_SWAP;
-#					if ($combinedList[$i][YEAR_COLUMN] < $combinedList[$i + 1][YEAR_COLUMN]) {
-#						 for (my $j = 0; $j < COLUMNS; $j++) {
-#							  $tempVar = $combinedList[$i + 1][$j];
-#							  $combinedList[$i + 1][$j] = $combinedList[$i][$j];
-#							  $combinedList[$i][$j] = $tempVar;
-#							  $didSwap = 0;
-#						 }
-#					}
-#			   }
-#		  }
-#	 } 
-#}
