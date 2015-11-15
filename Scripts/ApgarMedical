@@ -6,9 +6,9 @@
 use 5.14.1;
 use warnings;
 
-my @combinedListBest;
-my @combinedListCushing;
+
 my @combinedListFull;
+my $info;
 use constant DATA_FILE_CUSHING => "C:/Users/Owner/Desktop/Scripts, I'm Sure/Chapter07/ApgarMedicalCushing.txt";
 use constant DATA_FILE_BEST => "C:/Users/Owner/Desktop/Scripts, I'm Sure/Chapter07/ApgarMedicalBest.txt";
 use constant DATA_FILE_COMBINED => "C:/Users/Owner/Desktop/Scripts, I'm Sure/Chapter07/ApgarMedicalCombined.txt";
@@ -17,7 +17,12 @@ use constant YEAR_COLUMN => 2;
 
 sub main {
 	readData();
-	sortData();
+	printQuery();
+	if ($info == 0) {
+		sortData();
+	} else {
+		countBirthYearApportionment();
+	}
 }
 
 main();
@@ -47,6 +52,16 @@ sub readData() {
     close $IN;
 }
 
+sub printQuery {
+	use constant BIRTH_YEAR_LIST => 1;
+	print "Would you like a list of patients, or a list showing how many patients\nwere born each year? (Patient List = 0, Birth Year List = 1)\n";
+	chomp ($info = <STDIN>);
+	while ($info !~ /[0-9]/ || $info != 0 && $info != BIRTH_YEAR_LIST) {
+          print "Invalid entry. Please enter either a 0 or 1.\n(Patient List = 0, Birth Year List = 1)\n";
+          chomp ($info = <STDIN>);
+	}
+}
+
 sub sortData() {    
 	my $size = @combinedListFull;
 	my $tempVar = 0;
@@ -69,6 +84,38 @@ sub sortData() {
 		}
 	}
 	for (my $i = 0; $i < $size; $i++) {
-		print "$combinedListFull[$i][YEAR_COLUMN]\n";	  
+		print "$combinedListFull[$i][0]\n";	  
+	}
+}
+
+sub countBirthYearApportionment {
+	my @yearCollection;
+	use constant DEFAULT_YEARCOUNT => 1;
+	use constant YEARCOUNT_COLUMN => 1;
+	my $size = @combinedListFull;
+	my $yearCount = DEFAULT_YEARCOUNT;
+	my $yearNumber = 0;
+	for (my $i = 0; $i < $size; $i++) {
+		if (defined($combinedListFull[$i + 1])) {
+			if($combinedListFull[$i][YEAR_COLUMN] == $combinedListFull[$i + 1][YEAR_COLUMN]) {
+				$yearCount++;
+				$yearCollection[$yearNumber][0] = $combinedListFull[$i][YEAR_COLUMN];
+				$yearCollection[$yearNumber][YEARCOUNT_COLUMN] = $yearCount;
+			} else {
+				$yearCollection[$yearNumber][0] = $combinedListFull[$i][YEAR_COLUMN];
+				$yearCollection[$yearNumber][YEARCOUNT_COLUMN] = $yearCount;
+				$yearNumber++;
+				$yearCount = DEFAULT_YEARCOUNT;	
+			}            
+		} 
+   	}
+	for(my $i = 0; $i < $yearNumber; $i++) {
+		if(defined $yearCollection[$i][0]) {
+			if ($yearCollection[$i][YEARCOUNT_COLUMN] != DEFAULT_YEARCOUNT) {
+				print "$yearCollection[$i][1] patients were born in $yearCollection[$i][0].\n";    	
+			} else {
+				print "$yearCollection[$i][1] patient was born in $yearCollection[$i][0].\n"; 
+			}
+		}
 	}
 }
