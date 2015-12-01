@@ -1,0 +1,77 @@
+## Assignment: Project 06
+## Author: Nicolas Sims (sableye.nico@gmail.com)
+## Version: 11.30.2015.01
+## Hang a man
+
+use 5.14.1;
+use warnings;
+
+my ($chosenWord, $size, $numCharacters, @build, @guessed, @wordbank);
+use constant WORDBANK => "C:/Users/Owner/Desktop/Scripts, I'm Sure/Chapter07/Words.txt";
+
+sub main {
+	transferWords();
+     setChosenWord();
+     printNumCharacters();
+     guessLetter();
+}
+
+main();
+
+sub transferWords {
+	my $IN;
+	my $i = 0;
+	@wordbank = ();
+	open ($IN, '<', WORDBANK);
+	while(<$IN>) {
+		@wordbank = split(/,/);
+		$i++;
+     }
+     close $IN;
+}
+
+sub setChosenWord {
+     my $size = @wordbank;
+     my $i = int(rand($size));
+     $chosenWord = $wordbank[$i];
+## DELETE LATER V
+     print "$chosenWord\n";
+## DELETE LATER ^
+}
+
+sub printNumCharacters {
+     $numCharacters = length($chosenWord);
+## DELETE LATER V
+     print "$numCharacters\n";
+## DELETE LATER ^
+     for (my $i = 0; $i < $numCharacters; $i++) {
+          print "_ ";
+     }
+}
+
+sub guessLetter {
+     my $char;
+     my $result = 0;
+     my $offset = 0;
+     my $i = 0;
+     use constant FAILGUESS => -1;
+     print "\nThis word has $numCharacters characters. Guess away!\n";
+     chomp ($char = <STDIN>);
+     while ($result != FAILGUESS) {
+          $result = index ($chosenWord, $char, $offset);
+## DELETE LATER V
+          print "Result: $result\n";
+## DELETE LATER ^
+          if ($result != FAILGUESS) {
+               while ($i < $numCharacters) {
+                    if ($i == $result) {
+                         print "$char ";
+                    } else {
+                         print "_ ";
+                    }
+               $i++;
+               $offset = $result + 1;
+               }
+          }
+     }   
+}
