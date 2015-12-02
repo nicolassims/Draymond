@@ -6,14 +6,23 @@
 use 5.14.1;
 use warnings;
 
-my ($chosenWord, $size, $numCharacters, @build, @guessed, @wordbank);
+my ($chosenWord, $size, $numCharacters, $guesses, $gameOn, $wrongWord, @build, @guessed, @wordbank);
 use constant WORDBANK => "C:/Users/Owner/Desktop/Scripts, I'm Sure/Chapter07/Words.txt";
 
 sub main {
+     setGuesses();
+     setGameOn();
 	transferWords();
      setChosenWord();
      printNumCharacters();
-     guessLetter();
+     while ($gameOn == 0) {
+          guessLetter();
+          if ($wrongWord == 0) {
+               setGuesses();
+               printHangman();
+          }
+     }
+     finale();
 }
 
 main();
@@ -57,21 +66,150 @@ sub guessLetter {
      use constant FAILGUESS => -1;
      print "\nThis word has $numCharacters characters. Guess away!\n";
      chomp ($char = <STDIN>);
-     while ($result != FAILGUESS) {
-          $result = index ($chosenWord, $char, $offset);
+     $result = index ($chosenWord, $char, $offset);
+     $guessed[$result] = $char;
+     if ($result != FAILGUESS) {
+          while ($result != FAILGUESS) {
+               $result = index ($chosenWord, $char, $offset);
 ## DELETE LATER V
-          print "Result: $result\n";
+               print "Result: $result\n";
 ## DELETE LATER ^
-          if ($result != FAILGUESS) {
-               while ($i < $numCharacters) {
-                    if ($i == $result) {
-                         print "$char ";
-                    } else {
-                         print "_ ";
+               if ($result != FAILGUESS) {
+                    for ($i = 0; $i < $numCharacters; $i++) {
+                         if ($i == $result) {
+                              print "$char ";
+                         } elsif (defined $guessed[$result] && $i == $result) {
+                              print "$guessed[$result] ";
+                         } else {
+                              print "_ ";
+                         }
+                         $offset = $result + 1;
                     }
-               $i++;
-               $offset = $result + 1;
                }
           }
-     }   
+          $wrongWord = 1;
+     } else {
+          print "Sorry, nope!\n";
+          $wrongWord = 0;
+     }
+}
+
+sub setGameOn {
+     if (!defined $gameOn) {
+          $gameOn = 0;
+     } else {
+          $guesses++;
+     }
+}
+
+sub setGuesses {
+     if (!defined $guesses) {
+          $guesses = 0;
+     } else {
+          $guesses++;
+     }
+}
+
+sub printHangman {
+     use constant GAMEOFF => 1;
+     use constant RIGHTWORD => 1;
+	if ($guesses == 0) {
+		print "    ______\n";
+		print "    |    |\n";
+		print "         |\n";
+		print "         |\n";
+		print "         |\n";
+		print "         |\n";
+		print "         |\n\n";
+	} elsif ($guesses == 1) {
+		print "    ______\n";
+		print "    |    |\n";
+		print "  [      |\n";
+		print "         |\n";
+		print "         |\n";
+		print "         |\n";
+		print "         |\n\n";
+	} elsif ($guesses == 2) {
+		print "    ______\n";
+		print "    |    |\n";
+		print "  [   ]  |\n";
+		print "         |\n";
+		print "         |\n";
+		print "         |\n";
+		print "         |\n\n";
+	} elsif ($guesses == 3) {
+		print "    ______\n";
+		print "    |    |\n";
+		print "  [   ]  |\n";
+		print "    |--- |\n";
+		print "         |\n";
+		print "         |\n";
+		print "         |\n\n";
+	} elsif ($guesses == 4) {
+		print "    ______\n";
+		print "    |    |\n";
+		print "  [   ]  |\n";
+		print " ---|--- |\n";
+		print "         |\n";
+		print "         |\n";
+		print "         |\n\n";
+	} elsif ($guesses == 5) {
+		print "    ______\n";
+		print "    |    |\n";
+		print "  [   ]  |\n";
+		print " ---|--- |\n";
+		print "    |    |\n";
+		print "         |\n";
+		print "         |\n\n";
+	} elsif ($guesses == 6) {
+		print "    ______\n";
+		print "    |    |\n";
+		print "  [   ]  |\n";
+		print " ---|--- |\n";
+		print "    |    |\n";
+		print "    |    |\n";
+		print "         |\n\n";
+	} elsif ($guesses == 7) {
+		print "    ______\n";
+		print "    |    |\n";
+		print "  [   ]  |\n";
+		print " ---|--- |\n";
+		print "    |    |\n";
+		print "   _|    |\n";
+		print "         |\n\n";
+	} elsif ($guesses == 8) {
+		print "    ______\n";
+		print "    |    |\n";
+		print "  [   ]  |\n";
+		print " ---|--- |\n";
+		print "    |    |\n";
+		print "   _|_   |\n";
+		print "         |\n\n";
+	} elsif ($guesses == 9) {
+		print "    ______\n";
+		print "    |    |\n";
+		print "  [   ]  |\n";
+		print " ---|--- |\n";
+		print "    |    |\n";
+		print "   _|_   |\n";
+		print "      |  |\n\n";
+	} elsif ($guesses == 10) {
+		print "    ______\n";
+		print "    |    |\n";
+		print "  [   ]  |\n";
+		print " ---|--- |\n";
+		print "    |    |\n";
+		print "   _|_   |\n";
+		print "  |   |  |\n\n";
+          $gameOn = GAMEOFF;
+	}
+     $wrongWord = RIGHTWORD;
+}
+
+sub finale {
+     if ($wrongWord == 0) {
+          print "You win. Congrats.\n"
+     } else {
+          print "A man is dead because of you. Congrats.\n"
+     }
 }
