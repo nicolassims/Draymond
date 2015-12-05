@@ -6,8 +6,10 @@
 use 5.14.1;
 use warnings;
 
-my ($chosenWord, $size, $numCharacters, $guesses, $gameOn, $wrongWord, @build, @guessed, @wordbank);
+my ($chosenWord,  $numCharacters, $guesses, $gameOn, $wrongWord, @word, @wordbank, @guessed);
 use constant WORDBANK => "C:/Users/Owner/Desktop/Scripts, I'm Sure/Chapter07/Words.txt";
+use constant RIGHTWORD => 1;
+use constant WINGAME => 2;
 
 sub main {
      setGuesses();
@@ -27,6 +29,18 @@ sub main {
 
 main();
 
+sub setGuesses {
+     if (!defined $guesses) {
+          $guesses = 0;
+     } else {
+          $guesses++;
+     }
+}
+
+sub setGameOn {
+     $gameOn = 0;
+}
+
 sub transferWords {
 	my $IN;
 	my $i = 0;
@@ -43,76 +57,87 @@ sub setChosenWord {
      my $size = @wordbank;
      my $i = int(rand($size));
      $chosenWord = $wordbank[$i];
-## DELETE LATER V
-     print "$chosenWord\n";
-## DELETE LATER ^
 }
 
 sub printNumCharacters {
      $numCharacters = length($chosenWord);
-## DELETE LATER V
-     print "$numCharacters\n";
-## DELETE LATER ^
      for (my $i = 0; $i < $numCharacters; $i++) {
           print "_ ";
      }
+     print "\n ";
 }
 
 sub guessLetter {
      my $char;
-     my $result = 0;
-     my $offset = 0;
-     my $i = 0;
-     use constant FAILGUESS => -1;
+     my $guessIncrementor = 0;
+     my @characters = split("", $chosenWord);
+     my $guessedLength = @guessed;
+     my $size = @characters;
+     $wrongWord = 0;
+     my $guessedWord = 0;
      print "\nThis word has $numCharacters characters. Guess away!\n";
      chomp ($char = <STDIN>);
-     $result = index ($chosenWord, $char, $offset);
-     $guessed[$result] = $char;
-     if ($result != FAILGUESS) {
-          while ($result != FAILGUESS) {
-               $result = index ($chosenWord, $char, $offset);
-## DELETE LATER V
-               print "Result: $result\n";
-## DELETE LATER ^
-               if ($result != FAILGUESS) {
-                    for ($i = 0; $i < $numCharacters; $i++) {
-                         if ($i == $result) {
-                              print "$char ";
-                         } elsif (defined $guessed[$result] && $i == $result) {
-                              print "$guessed[$result] ";
-                         } else {
-                              print "_ ";
-                         }
-                         $offset = $result + 1;
-                    }
+     my $length = length $char;
+     my $numGuesses = @guessed;
+     for (my $i = 0; $i < $numGuesses; $i++) {
+          if ($char eq $guessed[$i]) {
+               $guessedWord = RIGHTWORD;
+          }
+     }
+     while ($char !~ /[a-z]/ || $length != 1 || $guessedWord == RIGHTWORD) {
+          print "Invalid entry. Please enter a single unused letter from A to Z.\n";
+          chomp ($char = <STDIN>);
+          $length = length $char;
+          $guessedWord = 0;
+          while (defined $guessed[$guessIncrementor]) {
+               $guessIncrementor++;
+          }
+          $guessed[$guessIncrementor] = $char;
+          for (my $i = 0; $i < $numGuesses; $i++) {
+               if ($char eq $guessed[$i]) {
+                    $guessedWord = RIGHTWORD;
                }
           }
-          $wrongWord = 1;
-     } else {
-          print "Sorry, nope!\n";
-          $wrongWord = 0;
      }
-}
-
-sub setGameOn {
-     if (!defined $gameOn) {
-          $gameOn = 0;
-     } else {
-          $guesses++;
+     while (defined $guessed[$guessIncrementor]) {
+          $guessIncrementor++;
      }
-}
-
-sub setGuesses {
-     if (!defined $guesses) {
-          $guesses = 0;
-     } else {
-          $guesses++;
+     $guessed[$guessIncrementor] = $char;
+     for (my $i = 0; $i < $numCharacters; $i++) {
+          if ($char eq $characters[$i]) {
+               $wrongWord = RIGHTWORD;
+               $word[$i] = $char;
+               my $size2 = @word;
+          } 
+     }
+     if ($wrongWord == 0) {
+          print "ThE rOpE tWiStS tIgHtEr...\n";
+     }
+     my $correctCounter = 0;
+     $guessedLength = @guessed;
+     for (my $i = 0; $i < $guessedLength; $i++) {
+          for (my $j = 0; $j < $numCharacters && defined $word[$j]; $j++) {
+               if ($guessed[$i] eq $word[$j]) {
+                    $correctCounter++;
+               }
+          }
+     }
+     if ($correctCounter >= $numCharacters) {
+          $gameOn = WINGAME;
+     }
+     if ($wrongWord == RIGHTWORD) {
+          for (my $i = 0; $i < $numCharacters; $i++) {
+               if (defined $word[$i]) {
+                    print "$word[$i] ";
+               } else {
+                    print "_ ";
+               }
+          }
+          print "\n";
      }
 }
 
 sub printHangman {
-     use constant GAMEOFF => 1;
-     use constant RIGHTWORD => 1;
 	if ($guesses == 0) {
 		print "    ______\n";
 		print "    |    |\n";
@@ -201,15 +226,15 @@ sub printHangman {
 		print "    |    |\n";
 		print "   _|_   |\n";
 		print "  |   |  |\n\n";
-          $gameOn = GAMEOFF;
+          $gameOn = RIGHTWORD;
 	}
      $wrongWord = RIGHTWORD;
 }
 
 sub finale {
-     if ($wrongWord == 0) {
+     if ($gameOn == WINGAME) {
           print "You win. Congrats.\n"
      } else {
-          print "A man is dead because of you. Congrats.\n"
+          print "iT eNdS.\n"
      }
 }
